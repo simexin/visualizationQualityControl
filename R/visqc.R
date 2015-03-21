@@ -57,8 +57,8 @@ gg_heatmap <- function(dataMatrix, cols = NULL, limits = NULL){
   # actual indices, and if not, change them to character
   if (is.integer(meltedData$Var1)){
     if (sum(dataIndices %in% meltedData$Var1) != nEntry){
-      meltedData$Var1 <- as.character(meltedData$Var1)
-      meltedData$Var2 <- as.character(meltedData$Var2)
+      meltedData$Var1 <- factor(as.character(meltedData$Var1, levels = rownames(dataMatrix), ordered = TRUE)
+      meltedData$Var2 <- as.character(meltedData$Var2, levels = colnames(dataMatrix), ordered = TRUE)
     }
   }
   
