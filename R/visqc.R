@@ -53,6 +53,11 @@ gg_heatmap <- function(dataMatrix, cols = NULL, limits = NULL){
   
   meltedData <- melt(dataMatrix, as.is = TRUE)
   
+  if (is.character(meltedData[, "Var1"])){
+    meltedData$Var1 <- factor(meltedData$Var1, levels = rownames(dataMatrix), ordered = TRUE)
+    meltedData$Var2 <- factor(meltedData$Var2, levels = colnames(dataMatrix), ordered = TRUE)
+  }
+  
   # checking if we have numeric values as indices, do they correspond to the
   # actual indices, and if not, change them to character
   if (is.integer(meltedData$Var1)){
