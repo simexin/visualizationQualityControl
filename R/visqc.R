@@ -76,3 +76,53 @@ gg_heatmap <- function(dataMatrix, cols = NULL, limits = NULL){
   
   return(outPlot)
 }
+
+#' pairwise correlation
+#' 
+#' given a data matrix, calculate inter-row correlation values
+#' 
+#' @param data_matrix the data
+#' @param use what data to use, "pairwise" or "complete"
+#' @param exclude_na should NA values be excluded
+#' @param exclude_0 should 0 values be excluded
+#' @param method which method of correlation to use
+#' 
+#' @return matrix
+#' @export
+pairwise_correlation <- function(data_matrix, use = "pairwise", exclude_na = TRUE, exclude_0 = FALSE, method = "pearson"){
+  n_entry <- nrow(data_matrix)
+  out_cor <- matrix(0, nrow = nrow(data_matrix), ncol = nrow(data_matrix))
+  rownames(out_cor) <- colnames(out_cor) <- rownames(data_matrix)
+  diag(out_cor) <- 1
+  
+  na_loc <- matrix(FALSE, nrow = n_entry, ncol = ncol(data_matrix))
+  zero_loc <- na_loc
+  
+  if (exclude_na){
+    na_loc <- is.na(data_matrix)
+  }
+  
+  if (exclude_0){
+    zero_loc <- data_matrix == 0
+  }
+  
+  exclude_loc <- na_loc | zero_loc
+  
+  if (use == "complete"){
+    keep_vals <- apply(exclude_loc, 2, function(x){sum(!x) == n_entry})
+    keep_vals <- matrix(keep_vals, nrow = n_entry, ncol = ncol(data_matrix), byrow = FALSE)
+  } else {
+    keep_vals <- !exclude_loc
+  }
+  
+  for (i in seq(1, n_entry)){
+    for (j in seq(i, n_entry)){
+      use_vals <- keep_vals[i, ] & keep_vals[j, ]
+      
+      if (sum(use_vals) > 1){
+        out_cor[i, j] <- out_cor[j, i] <- cor(data_matrix[i, use_vals], data_matrix[j, use_vals], method = method)
+      }
+    }
+  }
+  out_cor
+}
