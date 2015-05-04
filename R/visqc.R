@@ -178,3 +178,26 @@ calculate_fratio <- function(data, data_classes){
   f_ratio <- between_var / within_var
   f_ratio
 }
+
+#' calculate values from summaries
+#' 
+#' given a data.frame of means and variances, calculate mean sd at low end and
+#' mean rsd at high end.
+#' 
+#' @param data data.frame of means and variances
+#' @param low_cut means <= this value used for average sd
+#' @param hi_cut means >= this value used for average rsd
+#' 
+#' @import dplyr
+#' @export
+#' @return vector
+calc_sd_rsd <- function(data, low_cut, hi_cut = NULL){
+  if (is.null(hi_cut)){
+    hi_cut <- min(data[, "mean"]) > low_cut
+  }
+  
+  sd_mn <- select_(data, mean <= low_cut, type = "sd") %>% summarise_(., mean(var))
+  rsd_mn <- select_(data, mean >= hi_cut, type = "rsd") %>% summarise_(., mean(var))
+  
+  return(c(sd = sd_mn, rsd = rsd_mn))
+}
