@@ -196,8 +196,25 @@ calc_sd_rsd <- function(data, low_cut, hi_cut = NULL){
     hi_cut <- min(data[, "mean"]) > low_cut
   }
   
-  sd_mn <- select_(data, mean <= low_cut, type = "sd") %>% summarise_(., mean(var))
-  rsd_mn <- select_(data, mean >= hi_cut, type = "rsd") %>% summarise_(., mean(var))
+  sd_mn <- filter(data, mean <= low_cut, type == "sd") %>% summarise(., mean(var))
+  rsd_mn <- filter(data, mean >= hi_cut, type == "rsd") %>% summarise(., mean(var))
   
   return(c(sd = sd_mn, rsd = rsd_mn))
+}
+
+#' calculate values from summaries v2
+#' 
+#' given a data.frame of means and variances, use a two step non-linear least squares.
+#' The first step is done on the mean vs sd, then the estimates are used in a second
+#' that estimates them using the mean vs rsd.
+#' 
+#' @param data data.frame of means and variances
+#' 
+#' @import dplyr
+#' @return vector
+calc_sd_rsd_nls <- function(data){
+  nl_sd <- filter(data, type == "sd") %>% nls(var ~ B + A*mean, data = ., start = list(A = 0, B = 0))
+  nl_rsd <- filter(data, type == "rsd") %>% nls(var ~ ((A * mean) + B) / mean, data = ., start = list(A = coef(nl_sd)["A"], B = coef(nl_sd)["B"]))
+  
+  return(c(additive = coef(nl_rsd)["B"], proportional = coef(nl_rsd)["A"]))
 }
