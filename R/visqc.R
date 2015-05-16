@@ -209,12 +209,14 @@ calc_sd_rsd <- function(data, low_cut, hi_cut = NULL){
 #' that estimates them using the mean vs rsd.
 #' 
 #' @param data data.frame of means and variances
+#' @param ... other nls parameters
 #' 
 #' @import dplyr
+#' @export
 #' @return vector
-calc_sd_rsd_nls <- function(data){
-  nl_sd <- filter(data, type == "sd") %>% nls(var ~ B + A*mean, data = ., start = list(A = 0, B = 0))
-  nl_rsd <- filter(data, type == "rsd") %>% nls(var ~ ((A * mean) + B) / mean, data = ., start = list(A = coef(nl_sd)["A"], B = coef(nl_sd)["B"]))
+calc_sd_rsd_nls <- function(data, ...){
+  nl_sd <- filter(data, type == "sd") %>% nls(var ~ B + A*mean, data = ., start = list(A = 0, B = 0), ...)
+  nl_rsd <- filter(data, type == "rsd") %>% nls(var ~ ((A * mean) + B) / mean, data = ., start = list(A = coef(nl_sd)["A"], B = coef(nl_sd)["B"]), ...)
   
   return(c(additive = coef(nl_rsd)["B"], proportional = coef(nl_rsd)["A"]))
 }
