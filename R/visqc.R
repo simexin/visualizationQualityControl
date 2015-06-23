@@ -220,3 +220,4 @@ calc_sd_rsd_nls <- function(data, ...){
   
   return(c(additive = coef(nl_rsd)["B"], proportional = coef(nl_rsd)["A"]))
 }
+
