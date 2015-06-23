@@ -59,7 +59,17 @@ similarity_reorder <- function(similarity_matrix, matrix_indices=NULL, transform
 #' 
 #' @import dendsort
 #' @export
-similarity_reorderbyclass <- function(similarity_matrix, sample_classes, transform="none"){
+#' 
+#' @examples 
+#' set.seed(1234)
+#' mat <- matrix(rnorm(100, sd = 0.5), 10, 10)
+#' rownames(mat) <- colnames(mat) <- letters[1:10]
+#' 
+#'
+similarity_reorderbyclass <- function(similarity_matrix, sample_classes=NULL, transform="none"){
+  if (is.null(sample_classes)){
+    sample_classes <- list(none = seq(1, nrow(similarity_matrix)))
+  }
   new_order <- lapply(sample_classes, function(x){
     reorder_cluster(similarity_matrix[x, x], x, transform = transform)
   })
