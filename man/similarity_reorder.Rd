@@ -14,6 +14,9 @@ similarity_reorder(similarity_matrix, matrix_indices = NULL,
 
 \item{transform}{should a transformation be applied to the data first}
 }
+\value{
+a \link{dendrogram} object. To get the order use \code{order.dendogram}.
+}
 \description{
 given a matrix (maybe a distance matrix), cluster and then re-order using
 dendsort.

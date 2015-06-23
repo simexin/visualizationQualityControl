@@ -6,7 +6,8 @@
 \usage{
 generate_heatmap(matrix_data, color_values, title = "",
   row_color_data = NULL, row_color_list, col_color_data = NULL,
-  col_color_list)
+  col_color_list, cluster_rows = FALSE, cluster_columns = FALSE,
+  show_row_hclust = FALSE, show_column_hclust = FALSE, ...)
 }
 \arguments{
 \item{matrix_data}{the matrix you want to plot as a heatmap}
@@ -56,6 +57,17 @@ col_annotation = list(set = annotation_color[3:4])
 
 generate_heatmap(mat, colormap, row_color_data = row_data, row_color_list = row_annotation,
                  col_color_data = col_data, col_color_list = col_annotation)
+
+reorder_sim <- similarity_reorderbyclass(mat, transform = "sub_1")
+row_dat2 <- row_data[reorder_sim, , drop=FALSE]
+col_dat2 <- col_data[reorder_sim, , drop=FALSE]
+generate_heatmap(mat, colormap, "reorder1", row_data, row_annotation, col_data, col_annotation,
+                 reorder_sim, reorder_sim)
+
+sample_classes <- split(rownames(mat), row_data$grp)
+reorder_sim2 <- similarity_reorderbyclass(mat, sample_classes)
+generate_heatmap(mat, colormap, "reorder2", row_data, row_annotation, col_data, col_annotation,
+                 reorder_sim2, reorder_sim2)
 }
 }
 

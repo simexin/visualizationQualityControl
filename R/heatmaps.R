@@ -27,6 +27,8 @@ generate_group_colors <- function(n_group){
 #' @import dendsort
 #' @importFrom stats as.dist hclust as.dendrogram
 #' @export
+#' 
+#' @return a \link{dendrogram} object. To get the order use \code{order.dendogram}.
 similarity_reorder <- function(similarity_matrix, matrix_indices=NULL, transform = "none"){
   if (is.null(matrix_indices)){
     matrix_indices <- seq(1, nrow(similarity_matrix))
@@ -48,7 +50,7 @@ similarity_reorder <- function(similarity_matrix, matrix_indices=NULL, transform
   
   tmp_clust <- as.dendrogram(hclust(transform_data))
   new_sort <- dendsort(tmp_clust)
-  matrix_indices[order.dendrogram(new_sort)]
+  #matrix_indices[order.dendrogram(new_sort)]
 }
 
 
@@ -65,16 +67,19 @@ similarity_reorder <- function(similarity_matrix, matrix_indices=NULL, transform
 #' @import dendsort
 #' @export
 #' 
+#' @return a \link{dendrogram} object. To get the order use \code{order.dendogram}.
+#' 
 #' @examples 
 #' set.seed(1234)
 #' mat <- matrix(rnorm(100, 2, sd = 0.5), 10, 10)
 #' rownames(mat) <- colnames(mat) <- letters[1:10]
 #' neworder <- similarity_reorderbyclass(mat)
-#' mat[neworder, neworder]
+#' mat[order(neworder), order(neworder)]
 #'
 #' sample_class <- data.frame(grp = rep(c("grp1", "grp2"), each = 5))
 #' sample_class <- split(rownames(mat), sample_class$grp)
 #' neworder2 <- similarity_reorderbyclass(mat, sample_class)
+#' 
 #' mat[neworder2, neworder2]
 #' 
 similarity_reorderbyclass <- function(similarity_matrix, sample_classes=NULL, transform="none"){
@@ -85,7 +90,15 @@ similarity_reorderbyclass <- function(similarity_matrix, sample_classes=NULL, tr
     similarity_reorder(similarity_matrix[x, x], x, transform = transform)
   })
   
-  out_order <- unlist(new_order)
+  out_dendrogram <- new_order[[1]]
+  
+  if (length(new_order) > 1){
+    for (id in seq(2, length(new_order))){
+      out_dendrogram <- merge(out_dendrogram, new_order[[id]])
+    }
+  }
+  
+  out_dendrogram  
 }
 
 
@@ -131,19 +144,34 @@ similarity_reorderbyclass <- function(similarity_matrix, sample_classes=NULL, tr
 #' 
 #' generate_heatmap(mat, colormap, row_color_data = row_data, row_color_list = row_annotation,
 #'                  col_color_data = col_data, col_color_list = col_annotation)
+#'                  
+#' reorder_sim <- similarity_reorderbyclass(mat, transform = "sub_1")
+#' row_dat2 <- row_data[reorder_sim, , drop=FALSE]
+#' col_dat2 <- col_data[reorder_sim, , drop=FALSE]
+#' generate_heatmap(mat, colormap, "reorder1", row_data, row_annotation, col_data, col_annotation,
+#'                  reorder_sim, reorder_sim)
+#' 
+#' sample_classes <- split(rownames(mat), row_data$grp)
+#' reorder_sim2 <- similarity_reorderbyclass(mat, sample_classes)
+#' generate_heatmap(mat, colormap, "reorder2", row_data, row_annotation, col_data, col_annotation,
+#'                  reorder_sim2, reorder_sim2)
 #' }
 #' 
 #' @import ComplexHeatmap
 #' @export
-generate_heatmap <- function(matrix_data, color_values, title = "", row_color_data = NULL, row_color_list, col_color_data = NULL, col_color_list){
+generate_heatmap <- function(matrix_data, color_values, title = "", row_color_data = NULL, row_color_list, col_color_data = NULL, col_color_list, cluster_rows = FALSE, cluster_columns = FALSE, show_row_hclust = FALSE, show_column_hclust = FALSE, ...){
   if (!is.null(row_color_data)){
     row_annot <- rowAnnotation(df = row_color_data, col = row_color_list)
+  } else{
+    row_annot = new("HeatmapAnnotation")
   }
   if (!is.null(col_color_data)){
     col_annot <- HeatmapAnnotation(df = col_color_data, col = col_color_list)
+  } else{
+    col_annot <- new("HeatmapAnnotation")
   }
   
-  heat_out <- Heatmap(matrix_data, col = color_values, cluster_rows = FALSE, cluster_columns = FALSE,
-                      top_annotation = col_annot, column_title = title) + row_annot
+  heat_out <- Heatmap(matrix_data, col = color_values, cluster_rows = cluster_rows, cluster_columns = cluster_columns,
+                      top_annotation = col_annot, column_title = title, show_row_hclust = show_row_hclust, show_column_hclust = show_column_hclust,...) + row_annot
   heat_out
 }
