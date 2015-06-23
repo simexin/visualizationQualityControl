@@ -36,14 +36,19 @@ similarity_reorder <- function(similarity_matrix, matrix_indices=NULL, transform
     similarity_matrix <- as.dist(similarity_matrix)
   }
   
-  transform_data <- switch(none = similarity_matrix,
+  transform_data <- switch(transform,
+                           none = similarity_matrix,
                            inverse = 1 / similarity_matrix,
                            sub_1 = 1 - similarity_matrix,
                            log = log(similarity_matrix))
   
+  if (min(transform_data) < 0){
+    transform_data <- transform_data - min(transform_data)
+  }
+  
   tmp_clust <- as.dendrogram(hclust(transform_data))
   new_sort <- dendsort(tmp_clust)
-  matrix_indices[new_sort]
+  matrix_indices[order.dendrogram(new_sort)]
 }
 
 
@@ -62,16 +67,22 @@ similarity_reorder <- function(similarity_matrix, matrix_indices=NULL, transform
 #' 
 #' @examples 
 #' set.seed(1234)
-#' mat <- matrix(rnorm(100, sd = 0.5), 10, 10)
+#' mat <- matrix(rnorm(100, 2, sd = 0.5), 10, 10)
 #' rownames(mat) <- colnames(mat) <- letters[1:10]
-#' 
+#' neworder <- similarity_reorderbyclass(mat)
+#' mat[neworder, neworder]
 #'
+#' sample_class <- data.frame(grp = rep(c("grp1", "grp2"), each = 5))
+#' sample_class <- split(rownames(mat), sample_class$grp)
+#' neworder2 <- similarity_reorderbyclass(mat, sample_class)
+#' mat[neworder2, neworder2]
+#' 
 similarity_reorderbyclass <- function(similarity_matrix, sample_classes=NULL, transform="none"){
   if (is.null(sample_classes)){
     sample_classes <- list(none = seq(1, nrow(similarity_matrix)))
   }
   new_order <- lapply(sample_classes, function(x){
-    reorder_cluster(similarity_matrix[x, x], x, transform = transform)
+    similarity_reorder(similarity_matrix[x, x], x, transform = transform)
   })
   
   out_order <- unlist(new_order)
