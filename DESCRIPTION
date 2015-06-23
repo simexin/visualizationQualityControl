@@ -5,6 +5,6 @@ Author: Robert M Flight <rflight79@gmail.com>
 Date: 2015-03-19
 Maintainer: Robert M Flight <rflight79@gmail.com>
 Depends: R (>= 3.1.1)
-Suggests: ggplot2, knitr
+Suggests: ggplot2, ComplexHeatmap, knitr
 License: MIT
 VignetteBuilder: knitr::knitr
