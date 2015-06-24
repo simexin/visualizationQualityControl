@@ -50,6 +50,7 @@ similarity_reorder <- function(similarity_matrix, matrix_indices=NULL, transform
   
   tmp_clust <- as.dendrogram(hclust(transform_data))
   new_sort <- dendsort(tmp_clust)
+  return(list(dendrogram = new_sort, indices = matrix_indices[order.dendrogram(new_sort)]))
   #matrix_indices[order.dendrogram(new_sort)]
 }
 
@@ -90,15 +91,17 @@ similarity_reorderbyclass <- function(similarity_matrix, sample_classes=NULL, tr
     similarity_reorder(similarity_matrix[x, x], x, transform = transform)
   })
   
-  out_dendrogram <- new_order[[1]]
+  out_dendrogram <- new_order[[1]][["dendrogram"]]
   
   if (length(new_order) > 1){
     for (id in seq(2, length(new_order))){
-      out_dendrogram <- merge(out_dendrogram, new_order[[id]])
+      out_dendrogram <- merge(out_dendrogram, new_order[[id]][["dendrogram"]], adjust = "none")
     }
   }
   
-  out_dendrogram  
+  out_indices <- unlist(lapply(new_order, function(x){x$indices}))
+  
+  return(list(dendrogram = out_dendrogram, indices = out_indices))
 }
 
 
@@ -159,7 +162,7 @@ similarity_reorderbyclass <- function(similarity_matrix, sample_classes=NULL, tr
 #' 
 #' @import ComplexHeatmap
 #' @export
-generate_heatmap <- function(matrix_data, color_values, title = "", row_color_data = NULL, row_color_list, col_color_data = NULL, col_color_list, cluster_rows = FALSE, cluster_columns = FALSE, show_row_hclust = FALSE, show_column_hclust = FALSE, ...){
+generate_heatmap <- function(matrix_data, color_values, title = "", row_color_data = NULL, row_color_list, col_color_data = NULL, col_color_list, ...){
   if (!is.null(row_color_data)){
     row_annot <- rowAnnotation(df = row_color_data, col = row_color_list)
   } else{
@@ -171,7 +174,7 @@ generate_heatmap <- function(matrix_data, color_values, title = "", row_color_da
     col_annot <- new("HeatmapAnnotation")
   }
   
-  heat_out <- Heatmap(matrix_data, col = color_values, cluster_rows = cluster_rows, cluster_columns = cluster_columns,
-                      top_annotation = col_annot, column_title = title, show_row_hclust = show_row_hclust, show_column_hclust = show_column_hclust,...) + row_annot
+  heat_out <- Heatmap(matrix_data, col = color_values,
+                      top_annotation = col_annot, column_title = title, ...) + row_annot
   heat_out
 }

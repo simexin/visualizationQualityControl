@@ -6,8 +6,7 @@
 \usage{
 generate_heatmap(matrix_data, color_values, title = "",
   row_color_data = NULL, row_color_list, col_color_data = NULL,
-  col_color_list, cluster_rows = FALSE, cluster_columns = FALSE,
-  show_row_hclust = FALSE, show_column_hclust = FALSE, ...)
+  col_color_list, ...)
 }
 \arguments{
 \item{matrix_data}{the matrix you want to plot as a heatmap}

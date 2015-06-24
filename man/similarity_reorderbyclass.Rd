@@ -27,11 +27,12 @@ set.seed(1234)
 mat <- matrix(rnorm(100, 2, sd = 0.5), 10, 10)
 rownames(mat) <- colnames(mat) <- letters[1:10]
 neworder <- similarity_reorderbyclass(mat)
-mat[neworder, neworder]
+mat[order(neworder), order(neworder)]
 
 sample_class <- data.frame(grp = rep(c("grp1", "grp2"), each = 5))
 sample_class <- split(rownames(mat), sample_class$grp)
 neworder2 <- similarity_reorderbyclass(mat, sample_class)
+
 mat[neworder2, neworder2]
 }
 
