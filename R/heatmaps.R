@@ -248,7 +248,7 @@ similarity_reorderbyclass <- function(similarity_matrix, sample_classes=NULL, tr
 #' 
 #' @import ComplexHeatmap
 #' @export
-generate_heatmap <- function(matrix_data, color_values, title = "", row_color_data = NULL, row_color_list = NULL, col_color_data = NULL, col_color_list = NULL, ...){
+visqc_heatmap <- function(matrix_data, color_values, title = "", row_color_data = NULL, row_color_list = NULL, col_color_data = NULL, col_color_list = NULL, ...){
   if (!is.null(row_color_data) && !is.null(row_color_list)){
     row_annot <- rowAnnotation(df = row_color_data, col = row_color_list)
   } else{
