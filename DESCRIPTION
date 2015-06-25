@@ -9,3 +9,4 @@ Imports: ComplexHeatmap (>= 1.2.1), stats
 Suggest: circlize
 License: MIT
 VignetteBuilder: knitr::knitr
+Suggests: testthat

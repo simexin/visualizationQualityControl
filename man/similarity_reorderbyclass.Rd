@@ -10,17 +10,35 @@ similarity_reorderbyclass(similarity_matrix, sample_classes = NULL,
 \arguments{
 \item{similarity_matrix}{matrix of similarities between objects}
 
-\item{sample_classes}{list of indices of sample classes}
+\item{sample_classes}{data.frame or factor denoting classes}
 
 \item{transform}{a transformation to apply to the data}
 }
 \value{
-a \link{dendrogram} object. To get the order use \code{order.dendogram}.
+a list containing the reordering of the matrix in a:
+  \enumerate{
+    \item dendrogram
+    \item numeric vector
+    \item character vector (will be NULL if rownames are not set on the matrix)
+  }
 }
 \description{
 to avoid spurious visualization problems, it is useful in a heatmap visualization
 to reorder the samples within each sample class. This function uses
-hierarchical clustering and \link{dendsort} to sort entries in a heatmap.
+hierarchical clustering and \link{dendsort} to sort entries in a distance matrix.
+}
+\details{
+The \code{similarity_matrix} should be either a square matrix of similarity values
+or a distance matrix of class \code{dist}. If your matrix does not encode a "true"
+distance, you can use a \code{transform} to turn it into a true \code{distance}
+(for example, if you have correlation, then a distance would be 1 - correlation,
+use "sub_1" as the transform argument).
+
+The \code{sample_classes} should be either a data.frame or factor argument. If
+a data.frame is passed, all columns of the data.frame will be pasted together
+to create a factor for splitting the data into groups. If the rownames of the
+data.frame do not correspond to the rownames or colnames of the matrix, then
+it is assumed that the ordering in the matrix and the data.frame are identical.
 }
 \examples{
 set.seed(1234)

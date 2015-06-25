@@ -23,9 +23,12 @@ generate_heatmap(matrix_data, color_values, title = "",
 }
 \description{
 rolls some of the common \code{Heatmap} options into a single function call
-to make life easier when creating lots of heatmaps. \strong{Note:} this function
-does \emph{reorder} the rows or columns of the matrix before visualization,
-the order going in is what will be presented.
+to make life easier when creating lots of heatmaps. \strong{Note:} clustering
+of rows and columns is disabled, it is expected that you are reordering the
+matrix beforehand, or passing in \code{column_order} and \code{row_order} as
+arguments to be passed to \code{Heatmap} (see example). Matrices can be reordered
+using \code{\link{similarity_reorderbyclass}}, and nice class colors generated
+using \code{\link{generate_group_colors}}
 }
 \details{
 This function uses the \code{ComplexHeatmap} package to produce
@@ -40,33 +43,29 @@ corresponding to annotations in that column.
 \examples{
 \dontrun{
 library(circlize)
-colormap <- colorRamp2(c(-1, 0, 1), c("blue", "white", "red"))
-mat <- matrix(rnorm(100, sd = 0.5), 10, 10)
-rownames(mat) <- colnames(mat) <- letters[1:10]
+data(grp_cor)
+data(grp_info)
+colormap <- colorRamp2(c(0, 1), c("black", "white"))
 
-meta_data <- data.frame(grp = rep(c("grp1", "grp2"), each = 5),
-                        set = c(rep("set1", 3), rep("set2", 7)))
 annotation_color <- c(grp1 = "green", grp2 = "red", set1 = "blue",
                       set2 = "yellow")
 
-row_data <- meta_data[, "grp", drop = FALSE]
-col_data <- meta_data[, "set", drop = FALSE]
+row_data <- grp_info[, "grp", drop = FALSE]
+col_data <- grp_info[, "set", drop = FALSE]
 row_annotation = list(grp = annotation_color[1:2])
 col_annotation = list(set = annotation_color[3:4])
 
-generate_heatmap(mat, colormap, row_color_data = row_data, row_color_list = row_annotation,
+generate_heatmap(grp_cor, colormap, row_color_data = row_data, row_color_list = row_annotation,
                  col_color_data = col_data, col_color_list = col_annotation)
 
-reorder_sim <- similarity_reorderbyclass(mat, transform = "sub_1")
-row_dat2 <- row_data[reorder_sim, , drop=FALSE]
-col_dat2 <- col_data[reorder_sim, , drop=FALSE]
-generate_heatmap(mat, colormap, "reorder1", row_data, row_annotation, col_data, col_annotation,
-                 reorder_sim, reorder_sim)
+reorder_sim <- similarity_reorderbyclass(grp_cor, transform = "sub_1")
+generate_heatmap(grp_cor, colormap, "reorder1", row_data, row_annotation, col_data, col_annotation,
+                 column_order = reorder_sim$indices, row_order = reorder_sim$indices)
 
-sample_classes <- split(rownames(mat), row_data$grp)
-reorder_sim2 <- similarity_reorderbyclass(mat, sample_classes)
-generate_heatmap(mat, colormap, "reorder2", row_data, row_annotation, col_data, col_annotation,
-                 reorder_sim2, reorder_sim2)
+sample_classes <- grp_info[, "grp", drop = FALSE]
+reorder_sim2 <- similarity_reorderbyclass(grp_cor, sample_classes, "sub_1")
+generate_heatmap(grp_cor, colormap, "reorder2", row_data, row_annotation, col_data, col_annotation,
+                 column_order = reorder_sim2$indices, row_order = reorder_sim2$indices)
 }
 }
 
