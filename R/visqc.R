@@ -28,54 +28,6 @@ summarize_data <- function(in_data, sample_classes=NULL, avg_function = mean){
   out_data
 }
 
-#' heatmap
-#' 
-#' generates a heatmap using ggplot2
-#' 
-#' @param dataMatrix a data matrix with values for the heatmap
-#' @param cols the colors to use
-#' @param limits the limits to use for the data
-#' @return ggplot2 object
-#' @export
-#' @import ggplot2
-#' @importFrom reshape2 melt
-gg_heatmap <- function(dataMatrix, cols = NULL, limits = NULL){
-  if (is.null(limits)){
-    limits <- range(dataMatrix)
-  }
-  
-  if (is.null(cols)){
-    cols = grey.colors(10, start = 0, end = 1)
-  }
-  
-  nEntry <- nrow(dataMatrix)
-  dataIndices <- seq(1, nEntry)
-  
-  meltedData <- melt(dataMatrix, as.is = TRUE)
-  
-  if (is.character(meltedData[, "Var1"])){
-    meltedData$Var1 <- factor(meltedData$Var1, levels = rownames(dataMatrix), ordered = TRUE)
-    meltedData$Var2 <- factor(meltedData$Var2, levels = colnames(dataMatrix), ordered = TRUE)
-  }
-  
-  # checking if we have numeric values as indices, do they correspond to the
-  # actual indices, and if not, change them to character
-  if (is.integer(meltedData$Var1)){
-    if (sum(dataIndices %in% meltedData$Var1) != nEntry){
-      meltedData$Var1 <- factor(as.character(meltedData$Var1), levels = rownames(dataMatrix), ordered = TRUE)
-      meltedData$Var2 <- factor(as.character(meltedData$Var2), levels = colnames(dataMatrix), ordered = TRUE)
-    }
-  }
-  
-  outPlot <- ggplot(meltedData, aes(x = Var1, y = Var2, fill = value)) + geom_tile()
-  outPlot <- outPlot + scale_fill_gradientn(colours = cols, limits = limits)
-  # outPlot <- outPlot + scale_x_continuous(expand = c(0, 0)) + 
-  #  scale_y_continuous(expand = c(0, 0))
-  outPlot <- outPlot + coord_equal()
-  outPlot <- outPlot + theme(axis.title.x = element_blank(), axis.title.y = element_blank())
-  
-  return(outPlot)
-}
 
 #' pairwise correlation
 #' 
