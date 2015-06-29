@@ -11,14 +11,14 @@
 #' @import ggbiplot
 #' @import ggplot2
 #' @export
-visqc_pca <- function(pca_decomp, princomps = c(1, 2), groups = NULL, dot_size = 1){
+visqc_pca <- function(pca_decomp, princomps = c(1, 2), groups = NULL, dot_size = 4){
   x_data <- pca_decomp$x
   n_obj <- nrow(x_data)
   
   if (is.null(groups)){
     groups <- as.factor(rep("", n_obj))
   } else if (is.data.frame(groups)){
-    groups <- as.factor(paste(groups[, ], sep = "."))
+    groups <- as.factor(apply(sample_info, 1, paste, collapse = "."))
   }
   
   
