@@ -1,0 +1,32 @@
+# Visualization Quality Control
+
+Set of useful functions for calculating various measures from data and visualizing them.
+
+## Installation
+
+### Dependencies
+
+Note that before installing, you will want to install the `ggbiplot` package, and at least `v1.2.1` of the `ComplexHeatmap` package. Robert M Flight maintains a fork of `ggbiplot` on GitHub because it is not part of CRAN, and as of July 2, 2015, `ComplexHeatmap` must be installed from GitHub:
+
+```r
+devtools::install_github("rmflight/ggbiplot")
+devtools::install_github("jokergoo/ComplexHeatmap")
+```
+
+Other odd dependencies that may not be present include the `dendsort` package:
+
+```r
+install.packages("dendsort")
+```
+
+### This Package
+
+This package can be installed by cloning from the GitLab repo:
+
+```r
+git clone https://gitlab.cesb.uky.edu/rmflight/visualizationQualityControl.git
+cd visualizationQualityControl
+R
+devtools::install()
+```
+
