@@ -70,7 +70,7 @@ dim(all_cor)
 
 Two things to note about this:
 
-  1. The `t()` function call, as `pairwise_correlations` works on the rows of the data matrix. Therefore, we need to transpose the data matrix first. Here we can see that we definitely did the right thing because the correlation matrix is `r nrow(all_cor)` by `r nrow(all_cor)`, which is equal to the number of columns (samples) in the data matrix (`r ncol(all_intensity))`.
+  1. The `t()` function call, as `pairwise_correlations` works on the rows of the data matrix. Therefore, we need to transpose the data matrix first. Here we can see that we definitely did the right thing because the correlation matrix is `r nrow(all_cor)` by `r nrow(all_cor)`, which is equal to the number of columns (samples) in the data matrix (`r ncol(all_intensity)`).
   2. The function only calculates correlations on those things that are in common between the two samples. If the `exclude_0` argument is set to `TRUE`, then zero's will also be removed.
   
 ```{r plot_heatmap}
