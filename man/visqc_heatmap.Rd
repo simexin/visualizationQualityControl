@@ -55,16 +55,16 @@ col_data <- grp_info[, "set", drop = FALSE]
 row_annotation = list(grp = annotation_color[1:2])
 col_annotation = list(set = annotation_color[3:4])
 
-generate_heatmap(grp_cor, colormap, row_color_data = row_data, row_color_list = row_annotation,
+visqc_heatmap(grp_cor, colormap, row_color_data = row_data, row_color_list = row_annotation,
                  col_color_data = col_data, col_color_list = col_annotation)
 
 reorder_sim <- similarity_reorderbyclass(grp_cor, transform = "sub_1")
-generate_heatmap(grp_cor, colormap, "reorder1", row_data, row_annotation, col_data, col_annotation,
+visqc_heatmap(grp_cor, colormap, "reorder1", row_data, row_annotation, col_data, col_annotation,
                  column_order = reorder_sim$indices, row_order = reorder_sim$indices)
 
 sample_classes <- grp_info[, "grp", drop = FALSE]
 reorder_sim2 <- similarity_reorderbyclass(grp_cor, sample_classes, "sub_1")
-generate_heatmap(grp_cor, colormap, "reorder2", row_data, row_annotation, col_data, col_annotation,
+visqc_heatmap(grp_cor, colormap, "reorder2", row_data, row_annotation, col_data, col_annotation,
                  column_order = reorder_sim2$indices, row_order = reorder_sim2$indices)
 }
 }
