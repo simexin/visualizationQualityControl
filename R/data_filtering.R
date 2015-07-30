@@ -23,14 +23,23 @@ filter_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_
   names(class_index) <- uniq_classes
   
   if (keep_num <= 1) {
-    min_notzero <- sapply(class_index, function(x){round(sum(x) * keep_perc)})
+    min_notzero <- sapply(class_index, function(x){round(sum(x) * keep_num)})
   } else {
     min_notzero <- sapply(class_index, function(x){round(keep_num)})
   }
   
-  
+  # what is this doing?
+  # For each of the features (columns), check how many non-zero entries
+  # there are for each class. If the number is greater than the limit
+  # in at least one of the classes, keep that feature. This allows easy filtering
+  # of those features that have more than the specified number of zeros in all
+  # classes.
+  # 
+  # iterate over columns (features)
   has_min <- apply(data_matrix, 2, function(in_col){
+    # how many are non-zero in each class
     n_pass <- sapply(class_index, function(index){sum(in_col[index] > 0)})
+    # is the minimum reached in at least one class
     keep <- sum(n_pass >= min_notzero) > 0
     keep
   })
