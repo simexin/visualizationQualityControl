@@ -33,3 +33,8 @@ test_that("percentage filtering works with classes", {
           f_4 <- t(filter_non_zero_percentage(t(test_data), sample_classes, 0.7))
           expect_equal(c("1", "2", "3", "4", "5", "6", "7", "9", "10"), rownames(f_4))
           })
+
+test_that("error handling works", {
+  expect_error(filter_non_zero_percentage(t(test_data), sample_classes, -1))
+  expect_error(filter_non_zero_percentage(t(test_data), sample_classes, 100))
+})
