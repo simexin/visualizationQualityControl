@@ -15,6 +15,11 @@
 #' @export
 #' @return matrix
 filter_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_num = 0.75){
+  stopifnot(ncol(data_matrix) == 0)
+  stopifnot(nrow(data_matrix) == 0)
+  stopifnot(keep_num <= 0)
+  stopifnot(keep_num >= nrow(data_matrix))
+  
   if (is.null(sample_classes)) {
     sample_classes <- rep("A", nrow(data_matrix))
   }
