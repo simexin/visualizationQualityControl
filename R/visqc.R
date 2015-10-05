@@ -143,6 +143,52 @@ pairwise_distance <- function(data_matrix, use = "pairwise", exclude_na = TRUE, 
   out_cor
 }
 
+#' pairwise non-zero
+#' 
+#' given a data matrix, how many entries are non-zero on a pairwise basis
+#' 
+#' @param data_matrix the data
+#' @param exclude_na should NA values be excluded (default TRUE)
+#' @param exclude_inf should Inf values be excluded (default TRUE)
+#' @param method which method of correlation to use
+#' 
+#' @return matrix
+#' @export
+pairwise_nonzero <- function(data_matrix, use = "pairwise", exclude_na = TRUE, exclude_inf = TRUE){
+  n_entry <- nrow(data_matrix)
+  out_cor <- matrix(0, nrow = nrow(data_matrix), ncol = nrow(data_matrix))
+  rownames(out_cor) <- colnames(out_cor) <- rownames(data_matrix)
+  diag(out_cor) <- 1
+  
+  na_loc <- matrix(FALSE, nrow = n_entry, ncol = ncol(data_matrix))
+  inf_loc <- na_loc
+  
+  if (exclude_na){
+    na_loc <- is.na(data_matrix)
+  }
+  
+  if (exclude_inf){
+    inf_loc <- is.infinite(data_matrix)
+  }
+  
+  zero_loc <- data_matrix == 0
+  
+  exclude_loc <- na_loc | inf_loc
+  
+  keep_vals <- !exclude_loc
+
+  for (i in seq(1, n_entry)){
+    for (j in seq(i, n_entry)){
+      use_vals <- keep_vals[i, ] & keep_vals[j, ]
+      
+      zero_both <- zero_loc[i, ] & zero_loc[j, ]
+      
+      sum_non_zero <- sum(use_vals) - sum(zero_both)
+      out_cor[j, i] <- out_cor[i, j] <- sum_non_zero
+    }
+  }
+  out_cor
+}
 
 #' calculate F-ratio
 #' 
@@ -230,4 +276,3 @@ calc_sd_rsd_nls <- function(data, ...){
   
   return(c(additive = coef(nl_rsd)["B"], proportional = coef(nl_rsd)["A"]))
 }
-
