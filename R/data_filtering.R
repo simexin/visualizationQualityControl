@@ -27,7 +27,7 @@ filter_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_
   class_index <- lapply(uniq_classes, function(x){sample_classes %in% x})
   names(class_index) <- uniq_classes
   
-  if (keep_num <= 1) {
+  if (keep_num < 1) {
     min_notzero <- sapply(class_index, function(x){round(sum(x) * keep_num)})
   } else {
     min_notzero <- sapply(class_index, function(x){round(keep_num)})
