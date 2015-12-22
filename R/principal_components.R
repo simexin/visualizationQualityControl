@@ -18,7 +18,7 @@ visqc_pca <- function(pca_decomp, princomps = c(1, 2), groups = NULL, dot_size =
   if (is.null(groups)){
     groups <- as.factor(rep("", n_obj))
   } else if (is.data.frame(groups)){
-    groups <- as.factor(apply(sample_info, 1, paste, collapse = "."))
+    groups <- as.factor(apply(groups, 1, paste, collapse = "."))
   }
   
   
