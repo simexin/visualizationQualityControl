@@ -1,5 +1,5 @@
 Package: visualizationQualityControl
-Version: 0.0.22
+Version: 0.0.23
 Title: Development of visualization methods for quality control
 Author: Robert M Flight <rflight79@gmail.com>
 Date: 2016-01-06
@@ -10,3 +10,4 @@ Suggest: circlize
 License: MIT
 VignetteBuilder: knitr::knitr
 Suggests: testthat
+RoxygenNote: 5.0.1
