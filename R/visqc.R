@@ -7,11 +7,12 @@
 #' @param sample_classes which samples are in which class
 #' @param avg_function which function to use for summary
 #' @param log_transform apply a log-transform to the mean
+#' @param remove_zeros remove zeros before summarizing
 #' 
 #' @return data.frame
 #' @export
 summarize_data <- function(in_data, sample_classes=NULL, avg_function = mean,
-                           log_transform = FALSE){
+                           log_transform = FALSE, remove_zeros = FALSE){
   if (is.null(sample_classes)){
     sample_classes <- rep("A", nrow(in_data))
   }
@@ -20,9 +21,18 @@ summarize_data <- function(in_data, sample_classes=NULL, avg_function = mean,
   split_indices <- split(seq(1, nrow(in_data)), sample_classes)
   
   split_values <- lapply(split_indices, function(use_index){
-    tmp_mean <- apply(in_data[use_index, , drop = FALSE], 2, avg_function)
-    tmp_sd <- apply(in_data[use_index, , drop = FALSE], 2, sd)
-    data.frame(mean = tmp_mean, var = c(tmp_sd, tmp_sd / tmp_mean), type = rep(c("sd", "rsd"), each = n_feature))
+    tmp_mean_sd <- apply(in_data[use_index, , drop = FALSE], 2, function(x){
+      if (remove_zeros) {
+        x <- x[x != 0]
+        c(avg_function(x), sd(x))
+      }
+    })
+    tmp_mean_sd <- t(tmp_mean_sd)
+    colnames(tmp_mean_sd) <- c("mean", "sd")
+    data.frame(mean = tmp_mean_sd[, "mean"], 
+               var = c(tmp_mean_sd[, "sd"], 
+                       tmp_mean_sd[, "sd"] / tmp_mean_sd[, "mean"]), 
+               type = rep(c("sd", "rsd"), each = n_feature))
   })
   
   out_data <- do.call(rbind, split_values)
