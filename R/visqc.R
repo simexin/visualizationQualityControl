@@ -6,10 +6,12 @@
 #' @param in_data matrix or data.frame
 #' @param sample_classes which samples are in which class
 #' @param avg_function which function to use for summary
+#' @param log_transform apply a log-transform to the mean
 #' 
 #' @return data.frame
 #' @export
-summarize_data <- function(in_data, sample_classes=NULL, avg_function = mean){
+summarize_data <- function(in_data, sample_classes=NULL, avg_function = mean,
+                           log_transform = FALSE){
   if (is.null(sample_classes)){
     sample_classes <- rep("A", nrow(in_data))
   }
@@ -25,6 +27,10 @@ summarize_data <- function(in_data, sample_classes=NULL, avg_function = mean){
   
   out_data <- do.call(rbind, split_values)
   out_data$type <- factor(out_data$type, ordered = TRUE, levels = c("sd", "rsd"))
+  
+  if (is.function(log_transform)) {
+    out_data$log_mean <- log_transform(out_data$mean)
+  }
   out_data
 }
 
