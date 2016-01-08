@@ -36,6 +36,8 @@ summarize_data <- function(in_data, sample_classes=NULL, avg_function = mean,
   })
 
   out_data <- do.call(rbind, split_values)
+  class_rep <- vapply(split_values, nrow, numeric(1))
+  out_data$class <- rep(names(split_values), times = class_rep)
   out_data$type <- factor(out_data$type, ordered = TRUE, levels = c("sd", "rsd"))
 
   if (is.function(log_transform)) {
