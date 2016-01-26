@@ -5,7 +5,7 @@
 \title{summarize data}
 \usage{
 summarize_data(in_data, sample_classes = NULL, avg_function = mean,
-  log_transform = FALSE)
+  log_transform = FALSE, remove_zeros = FALSE)
 }
 \arguments{
 \item{in_data}{matrix or data.frame}
@@ -15,6 +15,8 @@ summarize_data(in_data, sample_classes = NULL, avg_function = mean,
 \item{avg_function}{which function to use for summary}
 
 \item{log_transform}{apply a log-transform to the mean}
+
+\item{remove_zeros}{remove zeros before summarizing}
 }
 \value{
 data.frame
