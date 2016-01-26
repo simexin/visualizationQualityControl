@@ -25,20 +25,21 @@ summarize_data <- function(in_data, sample_classes=NULL, avg_function = mean,
       if (remove_zeros) {
         x <- x[x != 0]
       }
-      c(avg_function(x), sd(x))
+      c(avg_function(x), sd(x), max(x) - min(x))
     })
     tmp_mean_sd <- t(tmp_mean_sd)
-    colnames(tmp_mean_sd) <- c("mean", "sd")
+    colnames(tmp_mean_sd) <- c("mean", "sd", "diff")
     data.frame(mean = tmp_mean_sd[, "mean"],
                var = c(tmp_mean_sd[, "sd"],
-                       tmp_mean_sd[, "sd"] / tmp_mean_sd[, "mean"]),
-               type = rep(c("sd", "rsd"), each = n_feature))
+                       tmp_mean_sd[, "sd"] / tmp_mean_sd[, "mean"],
+                       tmp_mean_sd[, "diff"]),
+               type = rep(c("sd", "rsd", "diff"), each = n_feature))
   })
 
   out_data <- do.call(rbind, split_values)
   class_rep <- vapply(split_values, nrow, numeric(1))
   out_data$class <- rep(names(split_values), times = class_rep)
-  out_data$type <- factor(out_data$type, ordered = TRUE, levels = c("sd", "rsd"))
+  out_data$type <- factor(out_data$type, ordered = TRUE, levels = c("diff", "sd", "rsd"))
 
   if (is.function(log_transform)) {
     out_data$log_mean <- log_transform(out_data$mean)
