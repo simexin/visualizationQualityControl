@@ -165,7 +165,12 @@ similarity_reorderbyclass <- function(similarity_matrix, sample_classes=NULL, tr
   }
   
   # we use ALL of the columns to generate factors that are used for splitting!
-  use_class <- do.call(paste, c(sample_classes, sep="."))
+  if (ncol(sample_classes) > 1) {
+    use_class <- do.call(paste, c(sample_classes, sep="."))
+  } else {
+    use_class <- sample_classes
+  }
+  
   
   split_indices <- split(num_indices, use_class)
   
