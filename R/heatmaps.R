@@ -211,10 +211,12 @@ similarity_reorderbyclass <- function(similarity_matrix, sample_classes=NULL, tr
 #' 
 #' @param matrix_data the matrix you want to plot as a heatmap
 #' @param color_values the color mapping of values to colors (see Details)
+#' @param title what do the values represent
 #' @param row_color_data data for row annotations
 #' @param row_color_list list for row annotations
 #' @param col_color_data data for column annotations
 #' @param col_color_list list for column annotations
+#' @param ... other \code{Heatmap} parameters
 #' 
 #' @details This function uses the \code{ComplexHeatmap} package to produce
 #' heatmaps with complex row- and column-color annotations. Both \code{row_color_data}
