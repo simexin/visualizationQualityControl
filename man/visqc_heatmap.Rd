@@ -13,6 +13,8 @@ visqc_heatmap(matrix_data, color_values, title = "", row_color_data = NULL,
 
 \item{color_values}{the color mapping of values to colors (see Details)}
 
+\item{title}{what do the values represent}
+
 \item{row_color_data}{data for row annotations}
 
 \item{row_color_list}{list for row annotations}
@@ -20,6 +22,8 @@ visqc_heatmap(matrix_data, color_values, title = "", row_color_data = NULL,
 \item{col_color_data}{data for column annotations}
 
 \item{col_color_list}{list for column annotations}
+
+\item{...}{other \code{Heatmap} parameters}
 }
 \description{
 rolls some of the common \code{Heatmap} options into a single function call

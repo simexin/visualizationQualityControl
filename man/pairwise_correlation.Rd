@@ -21,9 +21,17 @@ pairwise_correlation(data_matrix, use = "pairwise", exclude_na = TRUE,
 \item{method}{which method of correlation to use}
 }
 \value{
-matrix
+list
 }
 \description{
-given a data matrix, calculate inter-row correlation values
+given a data matrix, calculate inter-row correlation values.
+}
+\details{
+The function returns a named list with:
+  \describe{
+    \item{cor}{the correlation matrix}
+    \item{count}{how many points were used in the correlation}
+    \item{keep}{a logical matrix indicating which points passed filtering}
+    }
 }
 

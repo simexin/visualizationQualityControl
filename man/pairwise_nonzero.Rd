@@ -10,11 +10,11 @@ pairwise_nonzero(data_matrix, use = "pairwise", exclude_na = TRUE,
 \arguments{
 \item{data_matrix}{the data}
 
+\item{use}{how to work with the data}
+
 \item{exclude_na}{should NA values be excluded (default TRUE)}
 
 \item{exclude_inf}{should Inf values be excluded (default TRUE)}
-
-\item{method}{which method of correlation to use}
 }
 \value{
 matrix
