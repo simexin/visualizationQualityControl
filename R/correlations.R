@@ -305,4 +305,52 @@ pairwise_nonzero <- function(data_matrix, use = "pairwise", exclude_na = TRUE, e
   out_cor
 }
 
-# calculate median correlations
+#' calculate median correlations
+#' 
+#' Given a correlation matrix and optionally the sample class information,
+#' calculates the median correlations of each sample to all other samples in
+#' the same class. May be useful for determining outliers.
+#' 
+#' @param cor_matrix the sample - sample correlations
+#' @param sample_classes the sample classes as a character or factor
+#' 
+#' @return data.frame
+#' 
+#' @details The data.frame returned has two columns:
+#' \describe{
+#'   \item{med_cor}{the median correlation with other samples}
+#'   \item{sample_class}{the class of the sample. If not provided, set to "C1"}}
+#' }
+#' 
+median_correlations <- function(cor_matrix, sample_classes = NULL){
+  stopifnot(nrow(cor_matrix) == ncol(cor_matrix))
+  n_sample <- nrow(cor_matrix)
+  
+  if (is.null(sample_classes)) {
+    use_classes <- factor(rep("C1", n_sample))
+  } else if (is.factor(sample_classes)) {
+    use_classes <- sample_classes
+  } else {
+    sample_classes <- factor(sample_classes)
+    use_classes <- sample_classes
+  }
+  
+  split_classes <- split(seq(1, n_sample), use_classes)
+  
+  median_values_class <- lapply(split_classes, function(class_index){
+    class_matrix <- cor_matrix[class_index, class_index]
+    median_values <- vapply(seq(1, nrow(class_matrix)), function(in_row){
+      median(class_matrix[in_row, -in_row])
+    }, numeric(1))
+    
+    if (!is.null(rownames(class_matrix))) {
+      names(median_values) <- rownames(class_matrix)
+    }
+    median_values
+  })
+  
+  out_values <- data.frame(med_cor = unlist(median_values_class, use.names = FALSE),
+                           sample_class = use_classes)
+  
+  out_values
+}
