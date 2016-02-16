@@ -1,0 +1,50 @@
+context("median_correlation")
+
+data(grp_cor_data)
+
+grp1 <- grp_cor_data$data[, 1:10]
+grp2 <- grp_cor_data$data[, 1:10]
+
+grp1_class <- grp_cor_data$class[1:10]
+grp_class <- grp_cor_data$class
+
+test_that("median single works", {
+  grp1_cor <- cor(grp1)
+  expect_equal_to_reference(median_correlations(grp1_cor), "grp1_single.rds")
+  grp1_class <- rep("grp1", 10)
+  expect_equal_to_reference(median_correlations(grp1_cor, grp1_class), "grp1_single_class1.rds")
+  grp1_class <- factor(grp1_class)
+  expect_equal_to_reference(median_correlations(grp1_cor, grp1_class), "grp1_single_class2.rds")
+})
+
+test_that("median double works", {
+  grp1_grp2 <- cor(cbind(grp1, grp2))
+  
+  
+  expect_equal_to_reference(median_correlations(grp1_grp2, grp_class), "grp1_grp2_2class.rds")
+  grp_class <- factor(grp_class)
+  expect_equal_to_reference(median_correlations(grp1_grp2, grp_class), "grp1_grp2_2class2.rds")
+})
+
+test_that("median swapped works", {
+  all_samples <- cbind(grp1, grp2)
+  all_samples[, 3] <- grp2[, 3]
+  all_samples[, 15] <- grp1[, 3]
+  
+  all_cor <- cor(all_samples)
+  
+  expect_equal_to_reference(median_correlations(all_cor, grp_class), "all_cor.rds")
+})
+
+
+test_that("median with rownames works", {
+  all_samples <- cbind(grp1, grp2)
+  all_samples[, 3] <- grp2[, 3]
+  all_samples[, 15] <- grp1[, 3]
+  
+  all_cor <- cor(all_samples)
+  
+  rownames(all_cor) <- paste0("s", seq(1, 20))
+  
+  expect_equal_to_reference(median_correlations(all_cor, grp_class), "all_cor_names.rds")
+})
