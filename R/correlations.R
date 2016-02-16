@@ -362,3 +362,20 @@ median_correlations <- function(cor_matrix, sample_classes = NULL){
   
   out_values
 }
+
+#' grp_cor_data
+#' 
+#' Example data used for demonstrating \code{median correlation}. A list with
+#' 2 named entries:
+#' 
+#' \describe{
+#'   \item{data}{a data matrix with 100 rows and 20 columns}
+#'   \item{class}{a character vector of 20 entries denoting classes}
+#' }
+#' 
+#' The data comes from two groups of samples, where there is ~0.85 correlation
+#' within each group, and ~0.53 correlation between groups.
+#'  
+#' @format List with 2 entries, data and class
+#' @source Robert M Flight
+"grp_cor_data"
