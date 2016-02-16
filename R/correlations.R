@@ -315,6 +315,7 @@ pairwise_nonzero <- function(data_matrix, use = "pairwise", exclude_na = TRUE, e
 #' @param sample_classes the sample classes as a character or factor
 #' 
 #' @return data.frame
+#' @export
 #' 
 #' @details The data.frame returned has two columns:
 #' \describe{
@@ -349,7 +350,14 @@ median_correlations <- function(cor_matrix, sample_classes = NULL){
     median_values
   })
   
+  if (is.null(rownames(cor_matrix))) {
+    sample_id <- seq(1, n_sample)
+  } else {
+    sample_id <- rownames(cor_matrix)
+  }
+  
   out_values <- data.frame(med_cor = unlist(median_values_class, use.names = FALSE),
+                           sample_id = sample_id,
                            sample_class = use_classes)
   
   out_values
