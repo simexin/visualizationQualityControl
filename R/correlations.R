@@ -320,7 +320,7 @@ pairwise_nonzero <- function(data_matrix, use = "pairwise", exclude_na = TRUE, e
 #' @details The data.frame returned has two columns:
 #' \describe{
 #'   \item{med_cor}{the median correlation with other samples}
-#'   \item{sample_class}{the class of the sample. If not provided, set to "C1"}}
+#'   \item{sample_class}{the class of the sample. If not provided, set to "C1"}
 #' }
 #' 
 median_correlations <- function(cor_matrix, sample_classes = NULL){
@@ -361,6 +361,77 @@ median_correlations <- function(cor_matrix, sample_classes = NULL){
                            sample_class = use_classes)
   
   out_values
+}
+
+#' fraction of outliers
+#' 
+#' Calculates the fraction of entries in each sample that are more than \code{X}
+#' standard deviations from the trimmed mean. See Details.
+#' 
+#' @param data the data matrix (samples are rows, columns are features)
+#' @param sample_classes the sample classes
+#' @param n_trim how many features to trim at each end (default is 3)
+#' @param n_sd how many SD before treated as outlier (default is 5)
+#' @param remove_0 should zeros be removed before calculating? (default is TRUE)
+#' 
+#' @details Based on the Gerlinski paper \href{https://dx.doi.org/10.1093/bioinformatics/btv425}{link}
+#' for each feature (in a sample class), take the range across all the samples,
+#' remove the \code{n_trim} lowest and highest values, and calculate the \code{mean}
+#' and \code{sd}, and the actual upper and lower ranges of \code{n_sd} from the
+#' \code{mean}. For each sample and feature, determine if \emph{within} or \emph{outside}
+#' that limit. Fraction is reported as the number of features outside the range.
+#' 
+#' @export
+#' @return data.frame
+outlier_fraction <- function(data, sample_classes = NULL, n_trim = 3,
+                             n_sd = 5, remove_0 = FALSE){
+  n_sample <- nrow(data)
+  
+  if (is.null(sample_classes)) {
+    use_classes <- factor(rep("C1", n_sample))
+  } else if (is.factor(sample_classes)) {
+    use_classes <- sample_classes
+  } else {
+    sample_classes <- factor(sample_classes)
+    use_classes <- sample_classes
+  }
+  
+  split_classes <- split(seq(1, n_sample), use_classes)
+  
+  calc_outlier <- function(data, n_trim, n_sd, remove_0){
+    outlier_data <- apply(data, 2, function(x){
+      if (remove_0) {
+        y <- x[x != 0]
+      } else {
+        y <- x
+      }
+      n_y <- length(y)
+      y <- sort(y)
+      y <- y[(n_trim + 1):(n_y - (n_trim + 1))]
+      y_mean <- mean(y)
+      y_sd <- sd(y)
+      y_lo <- y_mean - (n_sd * y_sd)
+      y_hi <- y_mean + (n_sd * y_sd)
+      
+      x_out <- !((x >= y_lo) & (x <= y_hi))
+      
+      if (remove_0) {
+        x_out[x == 0] <- FALSE
+      }
+      x_out
+    })
+    return(outlier_data)
+  }
+  
+  frac_outlier_class <- lapply(names(split_classes), function(class_name){
+    class_index <- split_classes[[class_name]]
+    is_outlier <- calc_outlier(data[class_index, ], n_trim, n_sd, remove_0)
+    frac_outlier <- rowSums(is_outlier) / ncol(data)
+    data.frame(sample = class_index, class = class_name, frac = frac_outlier)
+  })
+  
+  frac_outlier <- do.call(rbind, frac_outlier_class)
+  frac_outlier
 }
 
 #' grp_cor_data
