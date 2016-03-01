@@ -19,4 +19,11 @@ Given a correlation matrix and optionally the sample class information,
 calculates the median correlations of each sample to all other samples in
 the same class. May be useful for determining outliers.
 }
+\details{
+The data.frame returned has two columns:
+\describe{
+  \item{med_cor}{the median correlation with other samples}
+  \item{sample_class}{the class of the sample. If not provided, set to "C1"}
+}
+}
 
