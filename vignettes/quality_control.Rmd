@@ -113,7 +113,7 @@ a different way. Note that what we are calculating are **all pairwise sample-sam
 correlations. In each sample-sample correlation, we calculate the correlation
 using the non-zero feature values.
 
-```{r sample1_sample2_cor}
+```{r sample1_sample2_cor, fig.width = 5, fig.height=5}
 s1_s2_cor <- cor(exp_data[,1], exp_data[,2])
 s1_s2_val <- sprintf("%.4f", s1_s2_cor)
 plot(exp_data[,1], exp_data[,2], main = paste0("R = ", s1_s2_val))
@@ -186,7 +186,7 @@ colormap <- colorRamp2(seq(0.5, 1, length.out = 20), viridis::viridis(20))
 
 Finally we can make the heatmaps!
 
-```{r heatmap1}
+```{r heatmap1, fig.width=5, fig.height=4}
 visqc_heatmap(data_cor, colormap, "Good Data", row_color_data = row_data,
               row_color_list = row_annotation, col_color_data = row_data,
               col_color_list = row_annotation, row_order = data_order$indices,
@@ -194,7 +194,7 @@ visqc_heatmap(data_cor, colormap, "Good Data", row_color_data = row_data,
 ```
 
 
-```{r heatmap2}
+```{r heatmap2, fig.width=5, fig.height=4}
 visqc_heatmap(mix_cor, colormap, "Bad Data", row_color_data = row_data,
               row_color_list = row_annotation, col_color_data = row_data,
               col_color_list = row_annotation, row_order = mix_order$indices,
@@ -215,7 +215,7 @@ data_medcor <- median_correlations(data_cor, sample_info$class)
 
 And plot it using facets in `ggplot2`.
 
-```{r plot_med_good}
+```{r plot_med_good, fig.width=5}
 ggplot(data_medcor, aes(x = sample_id, y = med_cor)) + geom_point() + 
   facet_grid(. ~ sample_class, scales = "free") + ggtitle("Good Data")
 ```
@@ -228,7 +228,7 @@ mix_medcor <- median_correlations(mix_cor, sample_info$class)
 
 Plot it!
 
-```{r plot_med_mix}
+```{r plot_med_mix, fig.width=5}
 ggplot(mix_medcor, aes(x = sample_id, y = med_cor)) + geom_point() +
   facet_grid(. ~ sample_class, scales = "free") + ggtitle("Bad Dat")
 ```
@@ -252,7 +252,7 @@ data_outlier <- outlier_fraction(t(exp_data), sample_info$class)
 
 Plot them!
 
-```{r plot_good_outliers}
+```{r plot_good_outliers, fig.width=5}
 ggplot(data_outlier, aes(x = sample, y = frac)) + geom_point() + 
   facet_grid(. ~ class, scales = "free") + ggtitle("Good Data")
 ```
@@ -265,7 +265,7 @@ mix_outlier <- outlier_fraction(t(mix_data), sample_info$class)
 
 Plot them.
 
-```{r plot_mixoutliers}
+```{r plot_mixoutliers, fig.width = 5}
 ggplot(mix_outlier, aes(x = sample, y = frac)) + geom_point() + 
   facet_grid(. ~ class, scales = "free") + ggtitle("Mix Data")
 ```
