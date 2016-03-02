@@ -270,4 +270,7 @@ ggplot(mix_outlier, aes(x = sample, y = frac)) + geom_point() +
   facet_grid(. ~ class, scales = "free") + ggtitle("Mix Data")
 ```
 
+## Conclusion
 
+Hopefully this has shown how you can use the various tools to examine your 
+high-througput -omics data for potential problems.
