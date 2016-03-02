@@ -59,3 +59,22 @@ exp_data[1:5, 1:5]
 sample_info
 ```
 
+In the following examples, the **raw** data is used. However, in many cases for
+-omics type data (transriptomics and metabolomics especially), the data should
+be **log-transformed** first and that data used. To handle zeros, either use
+the `log1p` function, or add a value that is 2-orders of magnitude smaller than
+the smallest non-zero value. Below is an example:
+
+```{r transform_data, eval=FALSE}
+log1_data <- log1p(exp_data)
+
+small_value <- min(exp_data[exp_data != 0]) / 100
+log2_data <- log2(exp_data + small_value)
+```
+
+
+## Principal Components Analysis
+
+As a first step, we will use principal components analysis (PCA) to decompose
+the data. Note that in this case, we are using the original data. If you are
+using -omics data, one should probably use a `log` transform first, and 
