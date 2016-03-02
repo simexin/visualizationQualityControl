@@ -33,6 +33,17 @@ This package can be installed by cloning from the GitLab repo:
     R
     devtools::install(".", quick = FALSE) # builds the vignette, which you definitely want
 
+Open Vignette
+-------------
+
+To open the vignette giving an example of examining data for quality
+control purposes, you should see the `quality_control` vignette using:
+
+    vignette("quality_control", package = "visualizationQualityControl")
+
+This will open the vignette in the help pane in `RStudio`, which is
+often what you want to happen.
+
 Fake Data Generation
 --------------------
 
