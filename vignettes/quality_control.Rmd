@@ -106,3 +106,15 @@ Note in this case **PC1** contains a large proportion of variance, and separates
 the samples very well. The PCA plots rarely look this good in practice!
 
 ## Correlation Heatmap
+
+Correlation heatmaps show much of the same information as the PCA plots, but in
+a different way. Note that what we are calculating are **all pairwise sample-sample**
+correlations. In each sample-sample correlation, we calculate the correlation
+using the non-zero feature values.
+
+```{r sample1_sample2_cor}
+s1_s2_cor <- cor(exp_data[,1], exp_data[,2])
+s1_s2_val <- sprintf("%.4f", s1_s2_cor)
+plot(exp_data[,1], exp_data[,2], main = paste0("R = ", s1_s2_val))
+```
+
