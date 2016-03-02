@@ -1,0 +1,57 @@
+---
+title: "Quality Control Example"
+author: "Robert M Flight"
+date: "`r Sys.time()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quality Control Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteDepends{visualizationQualityControl, ggplot2, ggbiplot, ComplexHeatmap}
+---
+
+# Introduction
+
+This vignette shows how the various functions in this package can be used for 
+basic quality control, in addition to advocating a particular workflow for 
+examining experimental data prior to analysis. These steps consist of:
+
+* Principal components analysis
+* Correlation heatmap
+* Median correlation
+* Feature outliers
+
+In all of the examples, we will compare and contrast a dataset that is composed
+of two different conditions, and the same dataset wherein two samples have had
+their class labels switched by mistake, and how the visualizations above can
+illustrate potential problems.
+
+# Data
+
+```{r load_data}
+library(visualizationQualityControl)
+data(grp_cor_data)
+exp_data <- grp_cor_data$data
+rownames(exp_data) <- paste0("f", seq(1, nrow(exp_data)))
+colnames(exp_data) <- paste0("s", seq(1, ncol(exp_data)))
+
+sample_info <- data.frame(id = colnames(exp_data), class = grp_cor_data$class)
+sample_classes <- sample_info$class
+```
+
+
+The data used here are from a simulated experiment, where there are two classes
+of samples. `r nrow(exp_data)` features measured, across `r ncol(exp_data)` samples
+from `r length(unique(sample_classes))` groups, with `r sum(sample_classes == "grp1")`
+in each group.
+
+The actual values we are going to use are in `exp_data`. The classes of samples are
+defined in `sample_classes`. We will also create a version of `sample_classes`,
+`mixed_classes`, where one of the sample classes is swapped.
+
+```{r show_data}
+str(exp_data)
+exp_data[1:5, 1:5]
+sample_info
+```
+
