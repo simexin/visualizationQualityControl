@@ -76,5 +76,25 @@ log2_data <- log2(exp_data + small_value)
 ## Principal Components Analysis
 
 As a first step, we will use principal components analysis (PCA) to decompose
-the data. Note that in this case, we are using the original data. If you are
-using -omics data, one should probably use a `log` transform first, and 
+the data. PCA is trying to find linear combinations of the original variables
+that account for the maximum amount of variance, and then finding the next
+combination that is orthogonal to the first, and so on and so on. It is extemely
+useful for confirming that the largest source of variance is the biological one,
+and for examining if any confounds can explain some sources of variance.
+
+```{r do_pca}
+pca_data <- prcomp(t(exp_data), center = TRUE)
+pca_mixed <- prcomp(t(mix_data), center = TRUE)
+```
+
+### Visualize Them
+
+```{r plot_pca}
+visqc_pca(pca_data, groups = sample_info$class) + ggtitle("Good Data")
+visqc_pca(pca_mixed, groups = sample_info$class) + ggtitle("Bad Data")
+```
+
+Note in this case **PC1** contains a large proportion of variance, and separates
+the samples very well. The PCA plots rarely look this good in practice!
+
+## Correlation Heatmap
