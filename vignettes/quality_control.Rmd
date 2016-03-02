@@ -37,6 +37,10 @@ colnames(exp_data) <- paste0("s", seq(1, ncol(exp_data)))
 
 sample_info <- data.frame(id = colnames(exp_data), class = grp_cor_data$class)
 sample_classes <- sample_info$class
+
+mix_data <- exp_data
+mix_data[, 5] <- exp_data[, 19]
+mix_data[, 19] <- exp_data[, 5]
 ```
 
 
@@ -46,8 +50,8 @@ from `r length(unique(sample_classes))` groups, with `r sum(sample_classes == "g
 in each group.
 
 The actual values we are going to use are in `exp_data`. The classes of samples are
-defined in `sample_classes`. We will also create a version of `sample_classes`,
-`mixed_classes`, where one of the sample classes is swapped.
+defined in `sample_classes`. We will also create a version of the data that has
+two samples completely switched by accident, labels and all, in `mix_data`.
 
 ```{r show_data}
 str(exp_data)
