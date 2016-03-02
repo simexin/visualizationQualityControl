@@ -7,7 +7,8 @@ vignette: >
   %\VignetteIndexEntry{Quality Control Example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{visualizationQualityControl, ggplot2, ggbiplot, ComplexHeatmap}
+  %\VignetteDepends{visualizationQualityControl, ggplot2, ggbiplot, ComplexHeatmap,
+  viridis}
 ---
 
 ## Introduction
@@ -117,4 +118,88 @@ s1_s2_cor <- cor(exp_data[,1], exp_data[,2])
 s1_s2_val <- sprintf("%.4f", s1_s2_cor)
 plot(exp_data[,1], exp_data[,2], main = paste0("R = ", s1_s2_val))
 ```
+
+### Calculate Correlations
+
+All pairwise correlations are calculated with the `pairwise_correlation` function.
+Note that we take the transpose of the data, because this function assumes
+that data are organized with *features* as *columns* and *samples* as *rows*.
+
+```{r calc_correlations}
+data_cor <- pairwise_correlation(t(exp_data))
+```
+
+This returns a list with some useful information, the actual correlations in `cor`,
+the number of points in each correlation in `count`, and which points pass the
+various filters in `keep`. We are really only interested in `cor` in this case.
+
+We can also check that we did the right correlations by looking at the dimensions
+of the matrix, in this case we expect a `r ncol(exp_data)` *by* `r ncol(exp_data)`
+matrix.
+
+```{r keep_cor}
+data_cor <- data_cor$cor
+dim(data_cor)
+```
+
+We also do the same for our **mixed-up** data.
+
+```{r mix_cor}
+mix_cor <- pairwise_correlation(t(mix_data))$cor
+```
+
+### Reorder Correlations
+
+To make the heatmap more useful, we also do clustering within each of the **sample classes**
+and reorder the correlations, this highlights sub-groups within classes as well
+as potential outliers.
+
+```{r reorder_cor}
+data_order <- similarity_reorderbyclass(data_cor, sample_info[, "class", drop = FALSE],
+                                        transform = "sub_1")
+mix_order <- similarity_reorderbyclass(mix_cor, sample_info[, "class", drop = FALSE],
+                                       transform = "sub_1")
+```
+
+### Color by Class
+
+We also want to color them by their class.
+
+```{r color_class}
+data_legend <- generate_group_colors(2)
+names(data_legend) <- c("grp1", "grp2")
+
+row_data <- sample_info[, "class", drop = FALSE]
+row_annotation <- list(class = data_legend)
+```
+
+### Map Correlation to Color
+
+```{r correlation_to_color}
+library(viridis)
+library(circlize)
+colormap <- colorRamp2(seq(0.5, 1, length.out = 20), viridis::viridis(20))
+```
+
+
+### Heatmap!
+
+Finally we can make the heatmaps!
+
+```{r heatmap1}
+visqc_heatmap(data_cor, colormap, "Good Data", row_color_data = row_data,
+              row_color_list = row_annotation, col_color_data = row_data,
+              col_color_list = row_annotation, row_order = data_order$indices,
+              column_order = data_order$indices)
+```
+
+
+```{r heatmap2}
+visqc_heatmap(mix_cor, colormap, "Bad Data", row_color_data = row_data,
+              row_color_list = row_annotation, col_color_data = row_data,
+              col_color_list = row_annotation, row_order = mix_order$indices,
+              column_order = mix_order$indices)
+```
+
+Note in the second example, **s5** and **s19** look odd.
 
