@@ -175,6 +175,13 @@ row_annotation <- list(class = data_legend)
 
 ### Map Correlation to Color
 
+Correlation values are mapped to colors using the `colorRamp2` function, by specifying
+the range of correlations, and what colors to map them to. Here the `viridis`
+color-scale is used because it is perceptually uniform and is good for those
+suffering from various types of color blindness. Other choices might be
+**black -> white**, or the other color maps in the `viridis` package. More
+information about `viridis` is available [here](http://bids.github.io/colormap/).
+
 ```{r correlation_to_color}
 library(viridis)
 library(circlize)
