@@ -89,9 +89,17 @@ pca_mixed <- prcomp(t(mix_data), center = TRUE)
 
 ### Visualize Them
 
+To visualize the data, we use the `visqc_pca` function, which calls `ggbiplot`
+under the hood with sensible defaults.
+
 ```{r plot_pca}
-visqc_pca(pca_data, groups = sample_info$class) + ggtitle("Good Data")
-visqc_pca(pca_mixed, groups = sample_info$class) + ggtitle("Bad Data")
+gd_pca <- visqc_pca(pca_data, groups = sample_info$class) + ggtitle("Good Data")
+bad_pca <- visqc_pca(pca_mixed, groups = sample_info$class) + ggtitle("Bad Data")
+```
+
+```{r show_them, echo=FALSE}
+gd_pca
+bad_pca
 ```
 
 Note in this case **PC1** contains a large proportion of variance, and separates
