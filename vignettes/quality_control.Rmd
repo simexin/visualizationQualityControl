@@ -10,7 +10,7 @@ vignette: >
   %\VignetteDepends{visualizationQualityControl, ggplot2, ggbiplot, ComplexHeatmap}
 ---
 
-# Introduction
+## Introduction
 
 This vignette shows how the various functions in this package can be used for 
 basic quality control, in addition to advocating a particular workflow for 
@@ -26,7 +26,7 @@ of two different conditions, and the same dataset wherein two samples have had
 their class labels switched by mistake, and how the visualizations above can
 illustrate potential problems.
 
-# Data
+## Data
 
 ```{r load_data}
 library(visualizationQualityControl)
