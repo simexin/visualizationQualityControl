@@ -217,7 +217,7 @@ And plot it using facets in `ggplot2`.
 
 ```{r plot_med_good}
 ggplot(data_medcor, aes(x = sample_id, y = med_cor)) + geom_point() + 
-  facet_grid(. ~ sample_class) + ggtitle("Good Data")
+  facet_grid(. ~ sample_class, scales = "free") + ggtitle("Good Data")
 ```
 
 ### Bad
@@ -230,6 +230,44 @@ Plot it!
 
 ```{r plot_med_mix}
 ggplot(mix_medcor, aes(x = sample_id, y = med_cor)) + geom_point() +
-  facet_grid(. ~ sample_class) + ggtitle("Bad Dat")
+  facet_grid(. ~ sample_class, scales = "free") + ggtitle("Bad Dat")
 ```
+
+## Proportion of Outlier Features
+
+For every feature (the rows in our matrix), within each **sample-class**, calculate
+the **trimmed** (remove the *x* highest and lowest values) *mean* and *sd*, which
+features are outside a given number of *sd's*, and then calculate the proportion
+of outliers in each sample. Samples with a deviated proportion of outliers should
+be examined more closely.
+
+If you are using **metabolomics** data with a large number of zeros, you probably
+want to ignore zeros.
+
+### Good
+
+```{r calc_outliers}
+data_outlier <- outlier_fraction(t(exp_data), sample_info$class)
+```
+
+Plot them!
+
+```{r plot_good_outliers}
+ggplot(data_outlier, aes(x = sample, y = frac)) + geom_point() + 
+  facet_grid(. ~ class, scales = "free") + ggtitle("Good Data")
+```
+
+### Bad
+
+```{r calc_mixoutliers}
+mix_outlier <- outlier_fraction(t(mix_data), sample_info$class)
+```
+
+Plot them.
+
+```{r plot_mixoutliers}
+ggplot(mix_outlier, aes(x = sample, y = frac)) + geom_point() + 
+  facet_grid(. ~ class, scales = "free") + ggtitle("Mix Data")
+```
+
 
