@@ -203,3 +203,33 @@ visqc_heatmap(mix_cor, colormap, "Bad Data", row_color_data = row_data,
 
 Note in the second example, **s5** and **s19** look odd.
 
+## Median Correlation
+
+Lets also calculate the median correlation within each class.
+
+### Good
+
+```{r med_cor}
+data_medcor <- median_correlations(data_cor, sample_info$class)
+```
+
+And plot it using facets in `ggplot2`.
+
+```{r plot_med_good}
+ggplot(data_medcor, aes(x = sample_id, y = med_cor)) + geom_point() + 
+  facet_grid(. ~ sample_class) + ggtitle("Good Data")
+```
+
+### Bad
+
+```{r med_corbad}
+mix_medcor <- median_correlations(mix_cor, sample_info$class)
+```
+
+Plot it!
+
+```{r plot_med_mix}
+ggplot(mix_medcor, aes(x = sample_id, y = med_cor)) + geom_point() +
+  facet_grid(. ~ sample_class) + ggtitle("Bad Dat")
+```
+
