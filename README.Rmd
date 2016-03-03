@@ -114,8 +114,9 @@ nsim4 <- exp(lsim4)
 sim4_error <- add_uniform_noise(10, nsim4, 1, use_zero = TRUE)
 ngrp2 <- exp(lgrp2) + sim4_error
 
-# put all data together
+# put all data together, and make negatives zero
 all_data <- cbind(ngrp1, ngrp2)
+all_data[(all_data < 0)] <- 0
 
 grp_class <- rep(c("grp1", "grp2"), each = 10)
 
