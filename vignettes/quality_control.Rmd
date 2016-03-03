@@ -31,12 +31,12 @@ illustrate potential problems.
 
 ```{r load_data}
 library(visualizationQualityControl)
-data(grp_cor_data)
-exp_data <- grp_cor_data$data
+data(grp_exp_data)
+exp_data <- grp_exp_data$data
 rownames(exp_data) <- paste0("f", seq(1, nrow(exp_data)))
 colnames(exp_data) <- paste0("s", seq(1, ncol(exp_data)))
 
-sample_info <- data.frame(id = colnames(exp_data), class = grp_cor_data$class)
+sample_info <- data.frame(id = colnames(exp_data), class = grp_exp_data$class)
 sample_classes <- sample_info$class
 
 mix_data <- exp_data
@@ -60,6 +60,14 @@ exp_data[1:5, 1:5]
 sample_info
 ```
 
+## Data Transformation
+
+Before we do anything else, we need to transform the data. This is because
+this and other -omics data frequently have a distribution and error structure
+that many statistical methods will completely choke on, or at least give you
+incorrect results.
+
+**Make sure to ask** if data has been transformed in any way!
 In the following examples, the **raw** data is used. However, in many cases for
 -omics type data (transriptomics and metabolomics especially), the data should
 be **log-transformed** first and that data used. To handle zeros, either use
