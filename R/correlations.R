@@ -363,6 +363,46 @@ median_correlations <- function(cor_matrix, sample_classes = NULL){
   out_values
 }
 
+
+# calculates if something is an outlier
+.calc_outlier <- function(data, n_trim, n_sd, remove_0){
+  outlier_data <- apply(data, 2, function(x){
+    is_bad <- is.infinite(x) | is.na(x) | is.nan(x)
+    if (remove_0) {
+      all_bad <- is_bad & (x == 0)
+    } else {
+      all_bad <- is_bad
+    }
+    y <- x[!all_bad]
+    n_y <- length(y)
+    y <- sort(y)
+    y_start <- n_trim + 1
+    y_end <- n_y - (n_trim + 1)
+    if ((y_end <= y_start) || (y_end <= 0)) {
+      y_start <- 1
+      y_end <- n_y
+    }
+    y <- y[y_start:y_end]
+    n_y <- length(y)
+    if (n_y >= 3) {
+      y_mean <- mean(y)
+      y_sd <- sd(y)
+      y_lo <- y_mean - (n_sd * y_sd)
+      y_hi <- y_mean + (n_sd * y_sd)
+      
+      x_out <- !((x >= y_lo) & (x <= y_hi))
+      
+      x_out[!all_bad] <- FALSE
+    } else {
+      x_out <- rep(FALSE, length(x))
+    }
+    
+    x_out
+  })
+  return(outlier_data)
+}
+
+
 #' fraction of outliers
 #' 
 #' Calculates the fraction of entries in each sample that are more than \code{X}
@@ -398,46 +438,9 @@ outlier_fraction <- function(data, sample_classes = NULL, n_trim = 3,
   
   split_classes <- split(seq(1, n_sample), use_classes)
   
-  calc_outlier <- function(data, n_trim, n_sd, remove_0){
-    outlier_data <- apply(data, 2, function(x){
-      is_bad <- is.infinite(x) | is.na(x) | is.nan(x)
-      if (remove_0) {
-        all_bad <- is_bad & (x != 0)
-      } else {
-        all_bad <- is_bad
-      }
-      y <- x[!all_bad]
-      n_y <- length(y)
-      y <- sort(y)
-      y_start <- n_trim + 1
-      y_end <- n_y - (n_trim + 1)
-      if ((y_end <= y_start) || (y_end <= 0)) {
-        y_start <- 1
-        y_end <- n_y
-      }
-      y <- y[y_start:y_end]
-      n_y <- length(y)
-      if (n_y >= 3) {
-        y_mean <- mean(y)
-        y_sd <- sd(y)
-        y_lo <- y_mean - (n_sd * y_sd)
-        y_hi <- y_mean + (n_sd * y_sd)
-        
-        x_out <- !((x >= y_lo) & (x <= y_hi))
-        
-        x_out[!all_bad] <- FALSE
-      } else {
-        x_out <- rep(FALSE, length(x))
-      }
-      
-      x_out
-    })
-    return(outlier_data)
-  }
-  
   frac_outlier_class <- lapply(names(split_classes), function(class_name){
     class_index <- split_classes[[class_name]]
-    is_outlier <- calc_outlier(data[class_index, , drop = FALSE], n_trim, n_sd, remove_0)
+    is_outlier <- .calc_outlier(data[class_index, , drop = FALSE], n_trim, n_sd, remove_0)
     frac_outlier <- rowSums(is_outlier) / ncol(data)
     data.frame(sample = class_index, class = class_name, frac = frac_outlier)
   })
