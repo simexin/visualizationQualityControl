@@ -68,11 +68,30 @@ that many statistical methods will completely choke on, or at least give you
 incorrect results.
 
 **Make sure to ask** if data has been transformed in any way!
-In the following examples, the **raw** data is used. However, in many cases for
--omics type data (transriptomics and metabolomics especially), the data should
-be **log-transformed** first and that data used. To handle zeros, either use
-the `log1p` function, or add a value that is 2-orders of magnitude smaller than
-the smallest non-zero value. Below is an example:
+
+Here I will show what the raw and transformed data looks like.
+
+```{r raw_plot, figure.width = 5, figure.height = 4}
+plot(exp_data[,1], exp_data[,2], main = "Raw")
+```
+
+Notice the dispersion in the values as the actual values increase. Most statistical
+methods don't like this. 
+
+```{r transform}
+log_data <- log(exp_data)
+```
+
+```{r log_plot}
+plot(log_data[,1], log_data[,2], main = "Log Transform")
+```
+
+But, lots of other methods don't deal well with `NA` or `Inf` values, which is what you
+get when you do a log-transform on negative or zero values. There are a couple of 
+solutions:
+
+* If have negatives, add the most negative + small offset
+* If have zeros, use `log1p` to handle zero and small values
 
 ```{r transform_data, eval=FALSE}
 log1_data <- log1p(exp_data)
@@ -81,6 +100,11 @@ small_value <- min(exp_data[exp_data != 0]) / 100
 log2_data <- log2(exp_data + small_value)
 ```
 
+Most of the methods in this package can handle the presence of `NA` or `Inf`, 
+except for the principal components analysis (PCA). Because we have physical data,
+the lowest value should be zero. Therefore we can use `log1p`, which will keep
+the zeros as zeros. Alternatively, we could use `log1p` for PCA, and `log` for
+the correlations.
 
 ## Principal Components Analysis
 
