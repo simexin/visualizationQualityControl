@@ -400,11 +400,13 @@ outlier_fraction <- function(data, sample_classes = NULL, n_trim = 3,
   
   calc_outlier <- function(data, n_trim, n_sd, remove_0){
     outlier_data <- apply(data, 2, function(x){
+      is_bad <- is.infinite(x) | is.na(x) | is.nan(x)
       if (remove_0) {
-        y <- x[x != 0]
+        all_bad <- is_bad & (x != 0)
       } else {
-        y <- x
+        all_bad <- is_bad
       }
+      y <- x[!all_bad]
       n_y <- length(y)
       y <- sort(y)
       y_start <- n_trim + 1
@@ -413,7 +415,6 @@ outlier_fraction <- function(data, sample_classes = NULL, n_trim = 3,
         y_start <- 1
         y_end <- n_y
       }
-      # need to fix cases with negatives
       y <- y[y_start:y_end]
       y_mean <- mean(y)
       y_sd <- sd(y)
@@ -422,9 +423,8 @@ outlier_fraction <- function(data, sample_classes = NULL, n_trim = 3,
       
       x_out <- !((x >= y_lo) & (x <= y_hi))
       
-      if (remove_0) {
-        x_out[x == 0] <- FALSE
-      }
+      x_out[!all_bad] <- FALSE
+      
       x_out
     })
     return(outlier_data)
