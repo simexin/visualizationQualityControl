@@ -106,6 +106,12 @@ the lowest value should be zero. Therefore we can use `log1p`, which will keep
 the zeros as zeros. Alternatively, we could use `log1p` for PCA, and `log` for
 the correlations.
 
+```{r log_transform}
+log_data <- log1p(exp_data)
+log_mix <- log1p(mix_data)
+```
+
+
 ## Principal Components Analysis
 
 As a first step, we will use principal components analysis (PCA) to decompose
@@ -116,8 +122,8 @@ useful for confirming that the largest source of variance is the biological one,
 and for examining if any confounds can explain some sources of variance.
 
 ```{r do_pca}
-pca_data <- prcomp(t(exp_data), center = TRUE)
-pca_mixed <- prcomp(t(mix_data), center = TRUE)
+pca_data <- prcomp(t(log_data), center = TRUE)
+pca_mixed <- prcomp(t(log_mix), center = TRUE)
 ```
 
 ### Visualize Them
@@ -146,9 +152,9 @@ correlations. In each sample-sample correlation, we calculate the correlation
 using the non-zero feature values.
 
 ```{r sample1_sample2_cor, fig.width = 5, fig.height=5}
-s1_s2_cor <- cor(exp_data[,1], exp_data[,2])
+s1_s2_cor <- cor(log_data[,1], exp_data[,2])
 s1_s2_val <- sprintf("%.4f", s1_s2_cor)
-plot(exp_data[,1], exp_data[,2], main = paste0("R = ", s1_s2_val))
+plot(log_data[,1], log_data[,2], main = paste0("R = ", s1_s2_val))
 ```
 
 ### Calculate Correlations
@@ -158,7 +164,7 @@ Note that we take the transpose of the data, because this function assumes
 that data are organized with *features* as *columns* and *samples* as *rows*.
 
 ```{r calc_correlations}
-data_cor <- pairwise_correlation(t(exp_data))
+data_cor <- pairwise_correlation(t(log_data), exclude_0 = TRUE)
 ```
 
 This returns a list with some useful information, the actual correlations in `cor`,
@@ -177,7 +183,7 @@ dim(data_cor)
 We also do the same for our **mixed-up** data.
 
 ```{r mix_cor}
-mix_cor <- pairwise_correlation(t(mix_data))$cor
+mix_cor <- pairwise_correlation(t(log_mix))$cor
 ```
 
 ### Reorder Correlations
@@ -286,7 +292,7 @@ want to ignore zeros.
 ### Good
 
 ```{r calc_outliers}
-data_outlier <- outlier_fraction(t(exp_data), sample_info$class)
+data_outlier <- outlier_fraction(t(log_data), sample_info$class, remove_0 = TRUE)
 ```
 
 Plot them!
