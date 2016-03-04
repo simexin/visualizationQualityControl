@@ -416,14 +416,19 @@ outlier_fraction <- function(data, sample_classes = NULL, n_trim = 3,
         y_end <- n_y
       }
       y <- y[y_start:y_end]
-      y_mean <- mean(y)
-      y_sd <- sd(y)
-      y_lo <- y_mean - (n_sd * y_sd)
-      y_hi <- y_mean + (n_sd * y_sd)
-      
-      x_out <- !((x >= y_lo) & (x <= y_hi))
-      
-      x_out[!all_bad] <- FALSE
+      n_y <- length(y)
+      if (n_y >= 3) {
+        y_mean <- mean(y)
+        y_sd <- sd(y)
+        y_lo <- y_mean - (n_sd * y_sd)
+        y_hi <- y_mean + (n_sd * y_sd)
+        
+        x_out <- !((x >= y_lo) & (x <= y_hi))
+        
+        x_out[!all_bad] <- FALSE
+      } else {
+        x_out <- rep(FALSE, length(x))
+      }
       
       x_out
     })
