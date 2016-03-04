@@ -407,7 +407,14 @@ outlier_fraction <- function(data, sample_classes = NULL, n_trim = 3,
       }
       n_y <- length(y)
       y <- sort(y)
-      y <- y[(n_trim + 1):(n_y - (n_trim + 1))]
+      y_start <- n_trim + 1
+      y_end <- n_y - (n_trim + 1)
+      if ((y_end <= y_start) || (y_end <= 0)) {
+        y_start <- 1
+        y_end <- n_y
+      }
+      # need to fix cases with negatives
+      y <- y[y_start:y_end]
       y_mean <- mean(y)
       y_sd <- sd(y)
       y_lo <- y_mean - (n_sd * y_sd)
@@ -425,7 +432,7 @@ outlier_fraction <- function(data, sample_classes = NULL, n_trim = 3,
   
   frac_outlier_class <- lapply(names(split_classes), function(class_name){
     class_index <- split_classes[[class_name]]
-    is_outlier <- calc_outlier(data[class_index, ], n_trim, n_sd, remove_0)
+    is_outlier <- calc_outlier(data[class_index, , drop = FALSE], n_trim, n_sd, remove_0)
     frac_outlier <- rowSums(is_outlier) / ncol(data)
     data.frame(sample = class_index, class = class_name, frac = frac_outlier)
   })

@@ -68,3 +68,9 @@ test_that("double classes work", {
   out_frac4 <- outlier_fraction(in_data2, sample_classes)
   expect_equal_to_reference(out_frac4, "in_data_switch.rds")
 })
+
+test_that("too few entries handled properly", {
+  test_data <- matrix(c(rep(0, 3), c(-8, -7, -6, 6)), nrow = 7, ncol = 1)
+  out_frac <- outlier_fraction(test_data, remove_0 = TRUE)
+  expect_equal(out_frac$frac, rep(0, 7))
+})
