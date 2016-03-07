@@ -161,7 +161,10 @@ plot(log_data[,1], log_data[,2], main = paste0("R = ", s1_s2_val))
 
 All pairwise correlations are calculated with the `pairwise_correlation` function.
 Note that we take the transpose of the data, because this function assumes
-that data are organized with *features* as *columns* and *samples* as *rows*.
+that data are organized with *features* as *columns* and *samples* as *rows*. 
+Also, because we used `log1p` to transform the data, we make sure to remove the
+zeros, corresponding to missing data. A `log` transform would make them `-Inf`
+or `NaN`, and they should be removed automatically.
 
 ```{r calc_correlations}
 data_cor <- pairwise_correlation(t(log_data), exclude_0 = TRUE)
@@ -223,7 +226,7 @@ information about `viridis` is available [here](http://bids.github.io/colormap/)
 ```{r correlation_to_color}
 library(viridis)
 library(circlize)
-colormap <- colorRamp2(seq(0.5, 1, length.out = 20), viridis::viridis(20))
+colormap <- colorRamp2(seq(0.8, 1, length.out = 20), viridis::viridis(20))
 ```
 
 
