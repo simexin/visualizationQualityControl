@@ -305,7 +305,7 @@ ggplot(data_outlier, aes(x = sample, y = frac)) + geom_point() +
 ### Bad
 
 ```{r calc_mixoutliers}
-mix_outlier <- outlier_fraction(t(mix_data), sample_info$class)
+mix_outlier <- outlier_fraction(t(mix_data), sample_info$class, remove_0 = TRUE)
 ```
 
 Plot them.
