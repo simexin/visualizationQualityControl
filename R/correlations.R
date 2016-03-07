@@ -369,7 +369,7 @@ median_correlations <- function(cor_matrix, sample_classes = NULL){
   outlier_data <- apply(data, 2, function(x){
     is_bad <- is.infinite(x) | is.na(x) | is.nan(x)
     if (remove_0) {
-      all_bad <- is_bad & (x == 0)
+      all_bad <- is_bad | (x == 0)
     } else {
       all_bad <- is_bad
     }
@@ -392,7 +392,9 @@ median_correlations <- function(cor_matrix, sample_classes = NULL){
       
       x_out <- !((x >= y_lo) & (x <= y_hi))
       
-      x_out[!all_bad] <- FALSE
+      # set those things that were outliers & bad in beginning to FALSE so
+      # we don't overestimate the outlier proportion
+      x_out[!(x_out & !all_bad)] <- FALSE
     } else {
       x_out <- rep(FALSE, length(x))
     }
