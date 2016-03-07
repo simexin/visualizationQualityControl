@@ -21,15 +21,18 @@ test_that("inserted outlier fraction", {
 
 test_that("zero argument works", {
   set.seed(456689)
-  test_data <- vapply(seq(1, 2), function(x){rnorm(200, 5, 1)}, numeric(200))
-  test_data[1:6,1] <- c(0, 0, 0, 10, 11, 12)
+  test_data <- vapply(seq(1, 2), function(x){rnorm(200, 5, 0.5)}, numeric(200))
+  test_data[1:7,1] <- c(0, 0, 0, 9, 10, 11, 12)
   
-  test_data[sample(seq(7, 200), 5), 1] <- 0
+  test_data[sample(seq(8, 200), 5), 1] <- 0
   out_frac <- outlier_fraction(test_data)
-  expect_equal(out_frac$frac, rep(c(0, 0.5, 0), times = c(4, 2, 194)))
+  expect_equal_to_reference(out_frac, "zero_1.rds")
   
   out_frac2 <- outlier_fraction(test_data, remove_0 = TRUE)
-  expect_equal(out_frac2$frac, rep(c(0, 0.5, 0), times = c(3, 3, 194)))
+  expect_equal_to_reference(out_frac2, "zero_2.rds")
+  
+  out_1_2 <- identical(out_frac, out_frac2)
+  expect_false(out_1_2)
 })
 
 test_that("other arguments work", {
