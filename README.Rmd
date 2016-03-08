@@ -5,6 +5,8 @@ Set of useful functions for calculating various measures from data and visualizi
 Takes a lot of inspiration from [Gierlinski et al., 2015](https://dx.doi.org/10.1093/bioinformatics/btv425), especially the `median_correlation` and
 `outlier_fraction` functions.
 
+This **readme** is documenting functionality as of **`r substr(git2r::branch_target(git2r::head(git2r::repository(getwd()))), 1, 8)`**.
+
 ## Installation
 
 ### Dependencies
@@ -38,7 +40,79 @@ devtools::install(".", quick = FALSE) # builds the vignette, which you definitel
 Alternatively, you can install it from GitHub in one go:
 
 ```r
-devtools::install_github("rmflight/visualizationQualityControl")
+devtools::install_github("rmflight/visualizationQualityControl", quick = FALSE)
+```
+
+## Examples
+
+These examples show the primary functionality. We will apply the visualizations
+to a two group dataset. However, all of the functions are still applicable to datasets with more than two groups. The examples below are for a dataset where there has been a sample swapped
+between the two groups (i.e. there is a problem!). If you want to see how the 
+visualizations compare between a **good** dataset and a **bad** dataset, see the vignette.
+
+```{r example_data}
+library(visualizationQualityControl)
+data("grp_cor_data")
+exp_data <- grp_cor_data$data
+rownames(exp_data) <- paste0("f", seq(1, nrow(exp_data)))
+colnames(exp_data) <- paste0("s", seq(1, ncol(exp_data)))
+
+sample_info <- data.frame(id = colnames(exp_data), class = grp_cor_data$class)
+
+exp_data[, 5] <- grp_cor_data$data[, 19]
+exp_data[, 19] <- grp_cor_data$data[, 5]
+sample_classes <- sample_info$class
+```
+
+
+### visqc_pca
+
+```{r do_pca}
+pca_data <- prcomp(t(exp_data), center = TRUE)
+visqc_pca(pca_data, groups = sample_classes)
+```
+
+### visqc_heatmap
+
+Calculate sample-sample correlations and reorder based on within class correlations
+
+```{r correlation}
+data_cor <- pairwise_correlation(t(exp_data), exclude_0 = TRUE)$cor
+data_order <- similarity_reorderbyclass(data_cor, sample_classes, transform = "sub_1")
+```
+
+And then generate a colormapping for the sample classes and plot the correlation heatmap.
+
+```{r colormapandheatmap}
+data_legend <- generate_group_colors(2)
+names(data_legend) <- c("grp1", "grp2")
+row_data <- sample_info[, "class", drop = FALSE]
+row_annotation <- list(class = data_legend)
+
+library(viridis)
+library(circlize)
+colormap <- colorRamp2(seq(0.4, 1, length.out = 20), viridis::viridis(20))
+
+visqc_heatmap(data_cor, colormap, "Correlation", row_color_data = row_data,
+              row_color_list = row_annotation, col_color_data = row_data,
+              col_color_list = row_annotation, row_order = data_order$indices,
+              column_order = data_order$indices)
+```
+
+### median_correlations
+
+```{r median_correlations}
+data_medcor <- median_correlations(data_cor, sample_classes)
+ggplot(data_medcor, aes(x = sample_id, y = med_cor)) + geom_point() + 
+  facet_grid(. ~ sample_class, scales = "free") + ggtitle("Median Correlation")
+```
+
+### outlier_fraction
+
+```{r outlier_fraction}
+data_outlier <- outlier_fraction(t(exp_data), sample_classes)
+ggplot(data_outlier, aes(x = sample, y = frac)) + geom_point() + 
+  facet_grid(. ~ class, scales = "free") + ggtitle("Outlier Fraction")
 ```
 
 
