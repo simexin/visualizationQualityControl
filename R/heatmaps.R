@@ -25,13 +25,37 @@ NULL
 #' for sample classes
 #' 
 #' @param n_group how many groups should there be colors for
+#' @param randomize should colors be randomized? (default is \code{NULL}). See \emph{details}.
+#' 
+#' @details the default for \code{randomize} is \code{NULL}, so that reordering
+#'   the colors randomly is decided purely based on the number of colors requested.
+#'   Currently, that cutoff is \emph{5} colors, less than that the colors will
+#'   always be in the same order, for \emph{5} colors or more, they will
+#'   be in a scrambled order, different each time unless \code{set.seed} is
+#'   used. If \code{randomize} is \code{TRUE} or \code{FALSE}, then it overrides
+#'   the defaults.
 #' 
 #' @importFrom colorspace rainbow_hcl
 #' @export
-generate_group_colors <- function(n_group){
+generate_group_colors <- function(n_group, randomize = NULL){
   end_color <- 360 * (n_group - 1) / n_group
   group_color <- rainbow_hcl(n_group, c = 100, start = 0, end = end_color)
-  group_color <- sample(group_color)
+  
+  
+  
+  if ((n_group < 5) && is.null(randomize)) {
+    do_sample <- FALSE
+  } else if ((n_group < 5) && is.logical(randomize)) {
+    do_sample <- randomize
+  } else if ((n_group >= 5) && is.null(randomize)) {
+    do_sample <- TRUE
+  } else if ((n_group >= 5) && is.logical(randomize)) {
+    do_sample <- randomize
+  }
+  
+  if (do_sample) {
+    group_color <- sample(group_color)
+  }
   group_color
 }
 

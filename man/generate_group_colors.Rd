@@ -4,14 +4,25 @@
 \alias{generate_group_colors}
 \title{create set of disjoint colors}
 \usage{
-generate_group_colors(n_group)
+generate_group_colors(n_group, randomize = NULL)
 }
 \arguments{
 \item{n_group}{how many groups should there be colors for}
+
+\item{randomize}{should colors be randomized? (default is \code{NULL}). See \emph{details}.}
 }
 \description{
 When multiple sample classes need to be visualized on a heatmap, it is useful
 to be able to distinguish them by color. This function generates a set of colors
 for sample classes
+}
+\details{
+the default for \code{randomize} is \code{NULL}, so that reordering
+  the colors randomly is decided purely based on the number of colors requested.
+  Currently, that cutoff is \emph{5} colors, less than that the colors will
+  always be in the same order, for \emph{5} colors or more, they will
+  be in a scrambled order, different each time unless \code{set.seed} is
+  used. If \code{randomize} is \code{TRUE} or \code{FALSE}, then it overrides
+  the defaults.
 }
 
