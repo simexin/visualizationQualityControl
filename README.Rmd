@@ -2,6 +2,9 @@
 
 Set of useful functions for calculating various measures from data and visualizing them.
 
+Takes a lot of inspiration from [Gierlinski et al., 2015](https://dx.doi.org/10.1093/bioinformatics/btv425), especially the `median_correlation` and
+`outlier_fraction` functions.
+
 ## Installation
 
 ### Dependencies
@@ -31,6 +34,13 @@ cd visualizationQualityControl
 R
 devtools::install(".", quick = FALSE) # builds the vignette, which you definitely want
 ```
+
+Alternatively, you can install it from GitHub in one go:
+
+```r
+devtools::install_github("rmflight/visualizationQualityControl")
+```
+
 
 ## Open Vignette
 
