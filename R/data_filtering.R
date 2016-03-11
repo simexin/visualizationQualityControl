@@ -1,8 +1,30 @@
-#' find non-zero by percentage
+#' keep features with percentage of non-zeros
 #' 
 #' Given a value matrix (features are columns, samples are rows), and sample classes, 
 #' find those things that are not zero in at least a certain 
-#' number of one of the classes
+#' number of one of the classes, and keep them
+#' 
+#' @param data_matrix the matrix of values to work with 
+#' @param sample_classes the classes of each sample
+#' @param keep_num what number of samples in each class need a non-zero value (see Details)
+#' 
+#' @details This function is being deprecated and all code should use the
+#'   \code{keep_non_zero_percentage} function instead.
+#' 
+#' @seealso keep_non_zero_percentage
+#' @export
+#' @return matrix
+filter_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_num = 0.75){
+  .Deprecated("keep_non_zero_percentage", "visualizationQualityControl")
+  keep_non_zero_percentage(data_matrix, sample_classes, keep_num)
+}
+
+#' keep features with percentage of non-zeros
+#' 
+#' Given a value matrix (features are columns, samples are rows), and sample classes, 
+#' find those things that are \emph{not zero} in at least a certain 
+#' number of samples in one of the classes, and keep those features for further
+#' processing.
 #' 
 #' @param data_matrix the matrix of values to work with 
 #' @param sample_classes the classes of each sample
@@ -14,7 +36,7 @@
 #' 
 #' @export
 #' @return matrix
-filter_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_num = 0.75){
+keep_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_num = 0.75){
   stopifnot(ncol(data_matrix) != 0)
   stopifnot(nrow(data_matrix) != 0)
   stopifnot(keep_num >= 0)
