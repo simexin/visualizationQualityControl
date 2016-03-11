@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_filtering.R
 \name{filter_non_zero_percentage}
 \alias{filter_non_zero_percentage}
-\title{find non-zero by percentage}
+\title{keep features with percentage of non-zeros}
 \usage{
 filter_non_zero_percentage(data_matrix, sample_classes = NULL,
   keep_num = 0.75)
@@ -20,11 +20,13 @@ matrix
 \description{
 Given a value matrix (features are columns, samples are rows), and sample classes, 
 find those things that are not zero in at least a certain 
-number of one of the classes
+number of one of the classes, and keep them
 }
 \details{
-The number of samples that must be non-zero can be expressed either as a whole
-  number (that is greater than one), or as a fraction that will be be multiplied 
-  by the number of samples in each class to get the lower limits for each of the classes.
+This function is being deprecated and all code should use the
+  \code{keep_non_zero_percentage} function instead.
+}
+\seealso{
+keep_non_zero_percentage
 }
 
