@@ -6,12 +6,13 @@
 #' @param pca_decomp the results of \code{prcomp}
 #' @param princomps which principal components to plot
 #' @param groups factor defining the classes of each object
+#' @param labels labels of the points
 #' @param dot_size size of the points (default is 1)
 #'
 #' @import ggbiplot
 #' @import ggplot2
 #' @export
-visqc_pca <- function(pca_decomp, princomps = c(1, 2), groups = NULL, dot_size = 4){
+visqc_pca <- function(pca_decomp, princomps = c(1, 2), groups = NULL, labels = NULL, dot_size = 4){
   x_data <- pca_decomp$x
   n_obj <- nrow(x_data)
   
@@ -22,5 +23,5 @@ visqc_pca <- function(pca_decomp, princomps = c(1, 2), groups = NULL, dot_size =
   }
   
   
-  ggbiplot(pca_decomp, obs.scale = 1, groups = groups, var.axes = FALSE, choices = princomps) + geom_point(aes(color = groups), size = dot_size) + coord_cartesian()
+  ggbiplot(pca_decomp, obs.scale = 1, groups = groups, labels = labels, var.axes = FALSE, choices = princomps) + geom_point(aes(color = groups), size = dot_size) + coord_cartesian()
 }

@@ -4,7 +4,8 @@
 \alias{visqc_pca}
 \title{sensible principal components}
 \usage{
-visqc_pca(pca_decomp, princomps = c(1, 2), groups = NULL, dot_size = 4)
+visqc_pca(pca_decomp, princomps = c(1, 2), groups = NULL, labels = NULL,
+  dot_size = 4)
 }
 \arguments{
 \item{pca_decomp}{the results of \code{prcomp}}
@@ -12,6 +13,8 @@ visqc_pca(pca_decomp, princomps = c(1, 2), groups = NULL, dot_size = 4)
 \item{princomps}{which principal components to plot}
 
 \item{groups}{factor defining the classes of each object}
+
+\item{labels}{labels of the points}
 
 \item{dot_size}{size of the points (default is 1)}
 }
