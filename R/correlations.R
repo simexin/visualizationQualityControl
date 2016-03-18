@@ -317,9 +317,10 @@ pairwise_nonzero <- function(data_matrix, use = "pairwise", exclude_na = TRUE, e
 #' @return data.frame
 #' @export
 #' 
-#' @details The data.frame returned has two columns:
+#' @details The data.frame returned has three columns:
 #' \describe{
 #'   \item{med_cor}{the median correlation with other samples}
+#'   \item{sample_id}{the sample id, either the rowname or an index}
 #'   \item{sample_class}{the class of the sample. If not provided, set to "C1"}
 #' }
 #' 
@@ -423,7 +424,14 @@ median_correlations <- function(cor_matrix, sample_classes = NULL){
 #' \code{mean}. For each sample and feature, determine if \emph{within} or \emph{outside}
 #' that limit. Fraction is reported as the number of features outside the range.
 #' 
-#' Returns a \code{data.frame} with 
+#' Returns a \code{data.frame} with:
+#' \describe{
+#'   \item{sample}{the sample id, \code{rownames} are used if available, otherwise
+#'   this is an index}
+#'   \item{class}{the class of the sample if \code{sample_classes} were provided,
+#'   otherwise given a default of "C1"}
+#'   \item{frac}{the actual outlier fraction calculated for that sample}
+#' }  
 #' 
 #' @export
 #' @return data.frame

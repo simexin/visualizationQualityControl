@@ -16,7 +16,7 @@ outlier_fraction(data, sample_classes = NULL, n_trim = 3, n_sd = 5,
 
 \item{n_sd}{how many SD before treated as outlier (default is 5)}
 
-\item{remove_0}{should zeros be removed before calculating? (default is TRUE)}
+\item{remove_0}{should zeros be removed before calculating? (default is FALSE)}
 }
 \value{
 data.frame
@@ -33,6 +33,13 @@ and \code{sd}, and the actual upper and lower ranges of \code{n_sd} from the
 \code{mean}. For each sample and feature, determine if \emph{within} or \emph{outside}
 that limit. Fraction is reported as the number of features outside the range.
 
-Returns a \code{data.frame} with
+Returns a \code{data.frame} with:
+\describe{
+  \item{sample}{the sample id, \code{rownames} are used if available, otherwise
+  this is an index}
+  \item{class}{the class of the sample if \code{sample_classes} were provided,
+  otherwise given a default of "C1"}
+  \item{frac}{the actual outlier fraction calculated for that sample}
+}
 }
 
