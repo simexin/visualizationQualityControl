@@ -414,7 +414,7 @@ median_correlations <- function(cor_matrix, sample_classes = NULL){
 #' @param sample_classes the sample classes
 #' @param n_trim how many features to trim at each end (default is 3)
 #' @param n_sd how many SD before treated as outlier (default is 5)
-#' @param remove_0 should zeros be removed before calculating? (default is TRUE)
+#' @param remove_0 should zeros be removed before calculating? (default is FALSE)
 #' 
 #' @details Based on the Gerlinski paper \href{https://dx.doi.org/10.1093/bioinformatics/btv425}{link}
 #' for each feature (in a sample class), take the range across all the samples,
