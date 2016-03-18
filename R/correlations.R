@@ -423,6 +423,8 @@ median_correlations <- function(cor_matrix, sample_classes = NULL){
 #' \code{mean}. For each sample and feature, determine if \emph{within} or \emph{outside}
 #' that limit. Fraction is reported as the number of features outside the range.
 #' 
+#' Returns a \code{data.frame} with 
+#' 
 #' @export
 #' @return data.frame
 outlier_fraction <- function(data, sample_classes = NULL, n_trim = 3,
@@ -440,11 +442,17 @@ outlier_fraction <- function(data, sample_classes = NULL, n_trim = 3,
   
   split_classes <- split(seq(1, n_sample), use_classes)
   
+  if (is.null(rownames(data))) {
+    sample_names <- seq(1, n_sample)
+  } else {
+    sample_names <- rownames(data)
+  }
+  
   frac_outlier_class <- lapply(names(split_classes), function(class_name){
     class_index <- split_classes[[class_name]]
     is_outlier <- .calc_outlier(data[class_index, , drop = FALSE], n_trim, n_sd, remove_0)
     frac_outlier <- rowSums(is_outlier) / ncol(data)
-    data.frame(sample = class_index, class = class_name, frac = frac_outlier)
+    data.frame(sample = sample_names[class_index], class = class_name, frac = frac_outlier)
   })
   
   frac_outlier <- do.call(rbind, frac_outlier_class)

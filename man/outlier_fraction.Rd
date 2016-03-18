@@ -32,5 +32,7 @@ remove the \code{n_trim} lowest and highest values, and calculate the \code{mean
 and \code{sd}, and the actual upper and lower ranges of \code{n_sd} from the
 \code{mean}. For each sample and feature, determine if \emph{within} or \emph{outside}
 that limit. Fraction is reported as the number of features outside the range.
+
+Returns a \code{data.frame} with
 }
 
