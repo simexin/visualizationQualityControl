@@ -1,6 +1,8 @@
 Visualization Quality Control
 =============================
 
+[![Join the chat at https://gitter.im/rmflight/visualizationQualityControl](https://badges.gitter.im/rmflight/visualizationQualityControl.svg)](https://gitter.im/rmflight/visualizationQualityControl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Set of useful functions for calculating various measures from data and
 visualizing them.
 
