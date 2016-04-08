@@ -8,8 +8,6 @@ it did a `for` loop to allow pairwise comparisons. This makes the correlations
 
 * new function `pairwise_correlation_count` to get the counts in each pairwise
 comparison
-
-* new function
  
 # v 0.1.1
 
