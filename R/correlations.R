@@ -46,10 +46,36 @@ pairwise_correlation <- function(data_matrix, use = "pairwise.complete.obs", exc
   
   out_cor <- cor(data_matrix, use = use, method = method)
   
-  return(list(cor = out_cor, keep = !exclude_loc))
+  # note that exclude_loc is transposed so it matches what the input data looked
+  # like
+  return(list(cor = out_cor, keep = t(!exclude_loc)))
 }
 
-
+#' pairwise correlation counts
+#' 
+#' given the \code{keep} entry from \code{pairwise_correlation}, get the number
+#' of things that would have been used for each of the pairwise comparisons. Note
+#' that pairwise comparisons of the rows are used.
+#' 
+#' @param keep_matrix \code{logical} matrix
+#' 
+#' @export
+#' @return matrix
+pairwise_correlation_counts <- function(keep_matrix){
+  stopifnot(is.logical(keep_matrix))
+  
+  n_entry <- nrow(keep_matrix)
+  
+  out_count <- matrix(0, n_entry, n_entry)
+  
+  for (i_entry in seq(1, (n_entry - 1))) {
+    for (j_entry in seq(i_entry, n_entry)) {
+      out_count[i_entry, j_entry] <- out_count[j_entry, i_entry] <- 
+        sum(keep_matrix[i_entry, ] & keep_matrix[j_entry, ])
+    }
+  }
+  out_count
+}
 
 #' pairwise correlation keep both zero
 #'
