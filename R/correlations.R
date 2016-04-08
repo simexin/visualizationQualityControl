@@ -1,9 +1,9 @@
 #' pairwise correlation
 #'
-#' given a data matrix, calculate inter-row correlation values.
+#' given a data matrix, calculate \emph{inter-row} correlation values.
 #'
 #' @param data_matrix the data
-#' @param use what data to use, "pairwise" or "complete"
+#' @param use what data to use, see \code{cor}
 #' @param exclude_na should NA values be excluded (default TRUE)
 #' @param exclude_inf should Inf values be excluded (default TRUE)
 #' @param exclude_0 should 0 values be excluded (default FALSE)
@@ -12,60 +12,44 @@
 #' @details The function returns a named list with:
 #'   \describe{
 #'     \item{cor}{the correlation matrix}
-#'     \item{count}{how many points were used in the correlation}
 #'     \item{keep}{a logical matrix indicating which points passed filtering}
 #'     }
 #' 
 #'
 #' @return list
 #' @export
-pairwise_correlation <- function(data_matrix, use = "pairwise", exclude_na = TRUE, exclude_inf = TRUE, exclude_0 = FALSE, method = "pearson"){
-  n_entry <- nrow(data_matrix)
-  out_cor <- matrix(0, nrow = nrow(data_matrix), ncol = nrow(data_matrix))
-  rownames(out_cor) <- colnames(out_cor) <- rownames(data_matrix)
+pairwise_correlation <- function(data_matrix, use = "pairwise.complete.obs", exclude_na = TRUE, exclude_inf = TRUE, exclude_0 = FALSE, method = "pearson"){
   
-  out_count <- out_cor
-  
-  diag(out_cor) <- 1
-  
-  na_loc <- matrix(FALSE, nrow = n_entry, ncol = ncol(data_matrix))
+  # assume row-wise (because that is what the description states), so need to transpose
+  # because `cor` actually does things columnwise.
+  data_matrix <- t(data_matrix)
+  na_loc <- matrix(FALSE, nrow = nrow(data_matrix), ncol = ncol(data_matrix))
   inf_loc <- na_loc
   zero_loc <- na_loc
   
-  if (exclude_na){
+  if (exclude_na) {
     na_loc <- is.na(data_matrix)
   }
   
-  if (exclude_inf){
+  if (exclude_inf) {
     inf_loc <- is.infinite(data_matrix)
   }
   
-  if (exclude_0){
+  if (exclude_0) {
     zero_loc <- data_matrix == 0
   }
   
   exclude_loc <- na_loc | zero_loc | inf_loc
   
-  if (use == "complete"){
-    keep_vals <- apply(exclude_loc, 2, function(x){sum(!x) == n_entry})
-    keep_vals <- matrix(keep_vals, nrow = n_entry, ncol = ncol(data_matrix), byrow = FALSE)
-  } else {
-    keep_vals <- !exclude_loc
-  }
+  # set everything to NA and let R take care of it
+  data_matrix[exclude_loc] <- NA
   
-  for (i in seq(1, n_entry)){
-    for (j in seq(i, n_entry)){
-      use_vals <- keep_vals[i, ] & keep_vals[j, ]
-      
-      if (sum(use_vals) > 1){
-        #print(c(i, j))
-        out_cor[i, j] <- out_cor[j, i] <- cor(data_matrix[i, use_vals], data_matrix[j, use_vals], method = method)
-        out_count[i, j] <- sum(use_vals)
-      }
-    }
-  }
-  return(list(cor = out_cor, count = out_count, keep = keep_vals))
+  out_cor <- cor(data_matrix, use = use, method = method)
+  
+  return(list(cor = out_cor, keep = !exclude_loc))
 }
+
+
 
 #' pairwise correlation keep both zero
 #'
