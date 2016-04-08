@@ -4,13 +4,14 @@
 \alias{pairwise_correlation}
 \title{pairwise correlation}
 \usage{
-pairwise_correlation(data_matrix, use = "pairwise", exclude_na = TRUE,
-  exclude_inf = TRUE, exclude_0 = FALSE, method = "pearson")
+pairwise_correlation(data_matrix, use = "pairwise.complete.obs",
+  exclude_na = TRUE, exclude_inf = TRUE, exclude_0 = FALSE,
+  method = "pearson")
 }
 \arguments{
 \item{data_matrix}{the data}
 
-\item{use}{what data to use, "pairwise" or "complete"}
+\item{use}{what data to use, see \code{cor}}
 
 \item{exclude_na}{should NA values be excluded (default TRUE)}
 
@@ -24,13 +25,12 @@ pairwise_correlation(data_matrix, use = "pairwise", exclude_na = TRUE,
 list
 }
 \description{
-given a data matrix, calculate inter-row correlation values.
+given a data matrix, calculate \emph{inter-row} correlation values.
 }
 \details{
 The function returns a named list with:
   \describe{
     \item{cor}{the correlation matrix}
-    \item{count}{how many points were used in the correlation}
     \item{keep}{a logical matrix indicating which points passed filtering}
     }
 }
