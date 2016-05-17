@@ -1,3 +1,8 @@
+# v 0.2.2
+
+* A bug was discovered in `median_correlations` that meant the wrong sample ids
+might be added to the output data, making detection of real problems difficult
+
 # v 0.2.1
 
 * `pairwise_correlation` now uses `cor` internally directly, whereas previously

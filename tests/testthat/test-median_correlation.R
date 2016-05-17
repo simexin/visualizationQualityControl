@@ -3,7 +3,7 @@ context("median_correlation")
 data(grp_cor_data)
 
 grp1 <- grp_cor_data$data[, 1:10]
-grp2 <- grp_cor_data$data[, 1:10]
+grp2 <- grp_cor_data$data[, 11:20]
 
 grp1_class <- grp_cor_data$class[1:10]
 grp_class <- grp_cor_data$class
@@ -44,7 +44,7 @@ test_that("median with rownames works", {
   
   all_cor <- cor(all_samples)
   
-  rownames(all_cor) <- paste0("s", seq(1, 20))
+  rownames(all_cor) <- colnames(all_cor) <- paste0("s", seq(1, 20))
   
   expect_equal_to_reference(median_correlations(all_cor, grp_class), "all_cor_names.rds")
 })
