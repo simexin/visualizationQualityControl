@@ -1,4 +1,4 @@
-# v 0.2.2
+# v 0.2.3
 
 * A bug was discovered in `median_correlations` that meant the wrong sample ids
 might be added to the output data, making detection of real problems difficult
