@@ -7,6 +7,7 @@
 #' @param exclude_na should NA values be excluded (default TRUE)
 #' @param exclude_inf should Inf values be excluded (default TRUE)
 #' @param exclude_0 should 0 values be excluded (default FALSE)
+#' @param zero_value what value represents zero (default is 0)
 #' @param method which method of correlation to use
 #'
 #' @details The function returns a named list with:
@@ -18,7 +19,7 @@
 #'
 #' @return list
 #' @export
-pairwise_correlation <- function(data_matrix, use = "pairwise.complete.obs", exclude_na = TRUE, exclude_inf = TRUE, exclude_0 = FALSE, method = "pearson"){
+pairwise_correlation <- function(data_matrix, use = "pairwise.complete.obs", exclude_na = TRUE, exclude_inf = TRUE, exclude_0 = FALSE, zero_value = 0, method = "pearson"){
 
   # assume row-wise (because that is what the description states), so need to transpose
   # because `cor` actually does things columnwise.
@@ -36,7 +37,7 @@ pairwise_correlation <- function(data_matrix, use = "pairwise.complete.obs", exc
   }
 
   if (exclude_0) {
-    zero_loc <- data_matrix == 0
+    zero_loc <- data_matrix == zero_value
   }
 
   exclude_loc <- na_loc | zero_loc | inf_loc
