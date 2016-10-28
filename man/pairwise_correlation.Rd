@@ -6,7 +6,7 @@
 \usage{
 pairwise_correlation(data_matrix, use = "pairwise.complete.obs",
   exclude_na = TRUE, exclude_inf = TRUE, exclude_0 = FALSE,
-  method = "pearson")
+  zero_value = 0, method = "pearson", weight = TRUE)
 }
 \arguments{
 \item{data_matrix}{the data}
@@ -18,6 +18,8 @@ pairwise_correlation(data_matrix, use = "pairwise.complete.obs",
 \item{exclude_inf}{should Inf values be excluded (default TRUE)}
 
 \item{exclude_0}{should 0 values be excluded (default FALSE)}
+
+\item{zero_value}{what value represents zero (default is 0)}
 
 \item{method}{which method of correlation to use}
 }
