@@ -1,3 +1,55 @@
+#' information volume
+#' 
+#' calculates the information volume weight
+#' 
+#' @param in_x which things are in X
+#' @param in_y which things are in Y
+#' 
+#' @export
+#' @return numeric
+information_volume <- function(in_x, in_y){
+  in_both <- sum(in_x & in_y)
+  n_total <- length(in_x)
+  in_both / n_total
+}
+
+#' correspondence
+#' 
+#' @param in_x which things are in X
+#' @param in_y which things are in Y
+#' 
+#' @export
+#' @return numeric
+correspondence <- function(in_x, in_y){
+  in_both <- sum(in_x & in_y)
+  not_both <- sum(!in_x & !in_y)
+  n_total <- length(in_x)
+  (in_both + not_both) / n_total
+}
+
+
+#' calculate weights
+#' 
+#' calculates the weights for correlations
+#' 
+#' @param nonzero_loc the non-zero location logical matrix
+#' 
+#' @export
+#' @return numeric
+calculate_weights <- function(nonzero_loc){
+  weight_matrix <- matrix(0, ncol(nonzero_loc), ncol(nonzero_loc))
+  for (icol in seq_len(ncol(nonzero_loc))) {
+    for (jcol in seq(icol, ncol(nonzero_loc))) {
+      info_weight <- information_volume(nonzero_loc[icol, ], nonzero_loc[jcol, ])
+      cor_weight <- correspondence(nonzero_loc[icol, ], nonzero_loc[jcol, ])
+      
+      weight_matrix[icol, jcol] <- 
+        weight_matrix[jcol, icol] <- info_weight * cor_weight
+    }
+  }
+  weight_matrix
+}
+
 #' pairwise correlation
 #'
 #' given a data matrix, calculate \emph{inter-row} correlation values.
@@ -19,7 +71,10 @@
 #'
 #' @return list
 #' @export
-pairwise_correlation <- function(data_matrix, use = "pairwise.complete.obs", exclude_na = TRUE, exclude_inf = TRUE, exclude_0 = FALSE, zero_value = 0, method = "pearson"){
+pairwise_correlation <- function(data_matrix, use = "pairwise.complete.obs", 
+                                 exclude_na = TRUE, exclude_inf = TRUE, 
+                                 exclude_0 = FALSE, zero_value = 0, method = "pearson",
+                                 weight = TRUE){
 
   # assume row-wise (because that is what the description states), so need to transpose
   # because `cor` actually does things columnwise.
@@ -45,11 +100,19 @@ pairwise_correlation <- function(data_matrix, use = "pairwise.complete.obs", exc
   # set everything to NA and let R take care of it
   data_matrix[exclude_loc] <- NA
 
-  out_cor <- cor(data_matrix, use = use, method = method)
+  calc_cor <- cor(data_matrix, use = use, method = method)
+  
+  # weight them if necessary
+  if (weight) {
+    w_matrix <- calculate_weights(!exclude_loc)
+    w_cor <- calc_cor * w_matrix
+  } else {
+    w_cor <- calc_cor
+  }
 
   # note that exclude_loc is transposed so it matches what the input data looked
   # like
-  return(list(cor = out_cor, keep = t(!exclude_loc)))
+  return(list(cor = w_cor, keep = t(!exclude_loc)))
 }
 
 #' pairwise correlation counts

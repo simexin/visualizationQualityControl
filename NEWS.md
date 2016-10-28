@@ -1,3 +1,11 @@
+# v 0.2.5
+
+* Added two functions, `information_volume` and `correspondence` to calculate
+weights based on the amount of things that are non-zero in both things when
+doing pairwise correlation.
+
+* Added logical argument `weight` to `pairwise_correlation` to weight the correlations. If `weight = TRUE`, the diagonal will not be **1** anymore, but instead will reflect how many features out of the total are in that sample.
+
 # v 0.2.3
 
 * A bug was discovered in `median_correlations` that meant the wrong sample ids
