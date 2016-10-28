@@ -29,6 +29,7 @@ filter_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_
 #' @param data_matrix the matrix of values to work with 
 #' @param sample_classes the classes of each sample
 #' @param keep_num what number of samples in each class need a non-zero value (see Details)
+#' @param zero_value what number represents zero values
 #' 
 #' @details The number of samples that must be non-zero can be expressed either as a whole
 #'   number (that is greater than one), or as a fraction that will be be multiplied 
@@ -36,7 +37,7 @@ filter_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_
 #' 
 #' @export
 #' @return matrix
-keep_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_num = 0.75){
+keep_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_num = 0.75, zero_value = 0){
   stopifnot(ncol(data_matrix) != 0)
   stopifnot(nrow(data_matrix) != 0)
   stopifnot(keep_num >= 0)
@@ -65,7 +66,7 @@ keep_non_zero_percentage <- function(data_matrix, sample_classes = NULL, keep_nu
   # iterate over columns (features)
   has_min <- apply(data_matrix, 2, function(in_col){
     # how many are non-zero in each class
-    n_pass <- sapply(class_index, function(index){sum(in_col[index] > 0)})
+    n_pass <- sapply(class_index, function(index){sum(in_col[index] > zero_value)})
     # is the minimum reached in at least one class
     keep <- sum(n_pass >= min_notzero) > 0
     keep
