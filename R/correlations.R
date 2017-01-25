@@ -61,6 +61,7 @@ calculate_weights <- function(nonzero_loc){
 #' @param exclude_0 should 0 values be excluded (default FALSE)
 #' @param zero_value what value represents zero (default is 0)
 #' @param method which method of correlation to use
+#' @param weight should the correlations be weighted by information content?
 #'
 #' @details The function returns a named list with:
 #'   \describe{
