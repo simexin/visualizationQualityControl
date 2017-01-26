@@ -5,6 +5,10 @@
 #' @param in_x which things are in X
 #' @param in_y which things are in Y
 #' 
+#' @details The information volume is based on how many things are actually
+#'   not missing in both samples. For weighting of correlations, this value
+#'   will be scaled by the maximum observed value across calculated correlations.
+#' 
 #' @export
 #' @return numeric
 information_volume <- function(in_x, in_y){
@@ -16,13 +20,37 @@ information_volume <- function(in_x, in_y){
 #' 
 #' @param in_x which things are in X
 #' @param in_y which things are in Y
+#' @param not_both also include those things NOT in both
+#' 
+#' @details Correspondence is based on how many things agree compared to how
+#'   many things do not agree. So by default it is the ratio of
+#'   
+#'     things observed in both / things observed in either
+#'     
+#'   This should handle well most types of data, including sparse data sets.
+#'   However, there are cases where the fact that values are missing in both
+#'   things being compared counts as information. This alternative method is
+#'   triggered by setting \code{not_both = TRUE}, resulting in the calculation:
+#'   
+#'     (things observed in both + things not observed in both) / total # of things
+#'     
+#'   This value will be scaled to the largest observed correspondence for weighting
+#'   as well.
 #' 
 #' @export
 #' @return numeric
-correspondence <- function(in_x, in_y){
+correspondence <- function(in_x, in_y, not_both = FALSE){
   in_both <- sum(in_x & in_y)
-  in_either <- sum(in_x | in_y)
-  in_both / in_either
+  
+  if (not_both) {
+    not_in_both <- sum(!in_x & !in_y)
+    corresp_ratio <- (in_both + not_in_both) / length(in_x)
+  } else {
+    in_either <- sum(in_x | in_y)
+    corresp_ratio <- in_both / in_either
+  }
+  
+  corresp_ratio
 }
 
 
@@ -31,21 +59,28 @@ correspondence <- function(in_x, in_y){
 #' calculates the weights for correlations
 #' 
 #' @param nonzero_loc the non-zero location logical matrix
+#' @param not_both consider things FALSE in both as information
 #' 
 #' @export
 #' @return list
-calculate_weights <- function(nonzero_loc){
+calculate_weights <- function(nonzero_loc, not_both = FALSE){
   info_matrix <- cor_matrix <- matrix(0, ncol(nonzero_loc), ncol(nonzero_loc))
   for (icol in seq_len(ncol(nonzero_loc) - 1)) {
     for (jcol in seq(icol + 1, ncol(nonzero_loc))) {
       #print(c(icol, jcol))
       info_matrix[icol, jcol] <- info_matrix[jcol, icol] <- information_volume(nonzero_loc[, icol], nonzero_loc[, jcol])
-      cor_matrix[icol, jcol] <- cor_matrix[jcol, icol] <- correspondence(nonzero_loc[, icol], nonzero_loc[, jcol])
+      cor_matrix[icol, jcol] <- cor_matrix[jcol, icol] <- correspondence(nonzero_loc[, icol], nonzero_loc[, jcol], not_both)
       
     }
   }
   info_weight <- info_matrix / max(info_matrix)
-  cor_weight <- cor_matrix
+  
+  if (not_both) {
+    cor_weight <- cor_matrix / max(cor_matrix)
+  } else {
+    cor_weight <- cor_matrix
+  }
+
   diag(info_weight) <- diag(cor_weight) <- 1
   return(list(info = info_weight, correspondence = cor_weight))
 }
@@ -62,11 +97,15 @@ calculate_weights <- function(nonzero_loc){
 #' @param zero_value what value represents zero (default is 0)
 #' @param method which method of correlation to use
 #' @param weight should the correlations be weighted by information content and correspondence?
+#' @param not_both should correspondence include things FALSE in both?
 #'
 #' @details The function returns a named list with:
 #'   \describe{
 #'     \item{cor}{the correlation matrix}
 #'     \item{keep}{a logical matrix indicating which points passed filtering}
+#'     \item{raw}{the raw correlations}
+#'     \item{info}{the weighting calculated from information content}
+#'     \item{correspondence}{the weighting from correspondence}
 #'     }
 #'
 #'
@@ -109,6 +148,8 @@ pairwise_correlation <- function(data_matrix, use = "pairwise.complete.obs",
     w_cor <- calc_cor * w_matrices$info * w_matrices$correspondence
   } else {
     w_cor <- calc_cor
+    w_matrices <- list(info = matrix(1, nrow = nrow(calc_cor), ncol = nrow(calc_cor)),
+                       correspondence = matrix(1, nrow = nrow(calc_cor), ncol = nrow(calc_cor)))
   }
 
   # note that exclude_loc is transposed so it matches what the input data looked
