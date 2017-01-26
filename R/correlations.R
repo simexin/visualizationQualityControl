@@ -437,6 +437,7 @@ pairwise_nonzero <- function(data_matrix, use = "pairwise", exclude_na = TRUE, e
 #'
 #' @param cor_matrix the sample - sample correlations
 #' @param sample_classes the sample classes as a character or factor
+#' @param between_classes should the between class correlations be evaluated?
 #'
 #' @return data.frame
 #' @export
@@ -446,9 +447,10 @@ pairwise_nonzero <- function(data_matrix, use = "pairwise", exclude_na = TRUE, e
 #'   \item{med_cor}{the median correlation with other samples}
 #'   \item{sample_id}{the sample id, either the rowname or an index}
 #'   \item{sample_class}{the class of the sample. If not provided, set to "C1"}
+#'   \item{compare_class}{the class of the other sample}
 #' }
 #'
-median_correlations <- function(cor_matrix, sample_classes = NULL){
+median_correlations <- function(cor_matrix, sample_classes = NULL, between_classes = FALSE){
   stopifnot(nrow(cor_matrix) == ncol(cor_matrix))
   n_sample <- nrow(cor_matrix)
 
