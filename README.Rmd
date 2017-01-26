@@ -77,7 +77,7 @@ visqc_pca(pca_data, groups = sample_classes)
 Calculate sample-sample correlations and reorder based on within class correlations
 
 ```{r correlation}
-data_cor <- pairwise_correlation(t(exp_data), exclude_0 = TRUE)$cor
+data_cor <- pairwise_correlation(t(exp_data))
 data_order <- similarity_reorderbyclass(data_cor, sample_classes, transform = "sub_1")
 ```
 
@@ -91,7 +91,7 @@ row_annotation <- list(class = data_legend)
 
 library(viridis)
 library(circlize)
-colormap <- colorRamp2(seq(0.4, 1, length.out = 20), viridis::viridis(20))
+colormap <- colorRamp2(seq(0.2, 1, length.out = 50), viridis::viridis(50))
 
 visqc_heatmap(data_cor, colormap, "Correlation", row_color_data = row_data,
               row_color_list = row_annotation, col_color_data = row_data,
@@ -115,6 +115,64 @@ ggplot(data_outlier, aes(x = sample, y = frac)) + geom_point() +
   facet_grid(. ~ class, scales = "free") + ggtitle("Outlier Fraction")
 ```
 
+### weighted correlations with missing values
+
+When there are missing values (either NA, or 0 depending on the case), the
+default is to only include values that are not missing in both things being
+compared, which makes sense for NA especially, because otherwise you can't 
+actually calculate a correlation. However, the correlations that are calculated
+then don't include the fact that data is missing. Therefore, we should be weighting
+the correlations to account for missing data.
+
+Lets add some missingness to our data.
+
+```{r}
+exp_data <- grp_cor_data$data
+rownames(exp_data) <- paste0("f", seq(1, nrow(exp_data)))
+colnames(exp_data) <- paste0("s", seq(1, ncol(exp_data)))
+```
+
+```{r add_random_missingness}
+make_na <- rep(FALSE, nrow(exp_data))
+s1_missing <- make_na
+s1_missing[sample(length(make_na), 20)] <- TRUE
+s2_missing <- make_na
+s2_missing[sample(which(!s1_missing), 20)] <- TRUE
+
+exp_data2[s1_missing, 1] <- NA
+exp_data2[s2_missing, 1] <- NA
+```
+
+```{r cor_random_missingness}
+cor_random_missing <- pairwise_correlation(t(exp_data2))
+cor_random_missing[1:4, 1:4]
+```
+THere is a bug right here, s3 vs s4 should not be modified!
+Here you can see that the correlations for S1 and S2 have been knocked 0.9, 
+with their lowest correlations being with each 
+other, due to the random missingness.
+
+```{r cor_random_missingness_noweight}
+cor_random_missing_nw <- pairwise_correlation(t(exp_data), weight = FALSE)$cor
+cor_random_missing_nw[1:4, 1:4]
+```
+
+What happens if we make the missingness match between them? That should count as
+information, right? If the feature is missing in the same samples, that is
+worth something?
+
+```{r cor_same_missingness}
+exp_data <- grp_cor_data$data
+rownames(exp_data) <- paste0("f", seq(1, nrow(exp_data)))
+colnames(exp_data) <- paste0("s", seq(1, ncol(exp_data)))
+exp_data[1:2, s1_missing] <- NA
+
+cor_same_missing <- pairwise_correlation(t(exp_data))$cor
+cor_same_missing[1:4, 1:4]
+```
+
+Here we can see that the correlations get dropped, but not as much as when it
+was random.
 
 ## Open Vignette
 
