@@ -9,8 +9,7 @@
 #' @return numeric
 information_volume <- function(in_x, in_y){
   in_both <- sum(in_x & in_y)
-  n_total <- length(in_x)
-  in_both / n_total
+  in_both
 }
 
 #' correspondence
@@ -22,9 +21,8 @@ information_volume <- function(in_x, in_y){
 #' @return numeric
 correspondence <- function(in_x, in_y){
   in_both <- sum(in_x & in_y)
-  not_both <- sum(!in_x & !in_y)
-  n_total <- length(in_x)
-  (in_both + not_both) / n_total
+  in_either <- sum(in_x | in_y)
+  in_both / in_either
 }
 
 
@@ -35,19 +33,21 @@ correspondence <- function(in_x, in_y){
 #' @param nonzero_loc the non-zero location logical matrix
 #' 
 #' @export
-#' @return numeric
+#' @return list
 calculate_weights <- function(nonzero_loc){
-  weight_matrix <- matrix(0, ncol(nonzero_loc), ncol(nonzero_loc))
-  for (icol in seq_len(ncol(nonzero_loc))) {
-    for (jcol in seq(icol, ncol(nonzero_loc))) {
-      info_weight <- information_volume(nonzero_loc[icol, ], nonzero_loc[jcol, ])
-      cor_weight <- correspondence(nonzero_loc[icol, ], nonzero_loc[jcol, ])
+  info_matrix <- cor_matrix <- matrix(0, ncol(nonzero_loc), ncol(nonzero_loc))
+  for (icol in seq_len(ncol(nonzero_loc) - 1)) {
+    for (jcol in seq(icol + 1, ncol(nonzero_loc))) {
+      #print(c(icol, jcol))
+      info_matrix[icol, jcol] <- info_matrix[jcol, icol] <- information_volume(nonzero_loc[, icol], nonzero_loc[, jcol])
+      cor_matrix[icol, jcol] <- cor_matrix[jcol, icol] <- correspondence(nonzero_loc[, icol], nonzero_loc[, jcol])
       
-      weight_matrix[icol, jcol] <- 
-        weight_matrix[jcol, icol] <- info_weight * cor_weight
     }
   }
-  weight_matrix
+  info_weight <- info_matrix / max(info_matrix)
+  cor_weight <- cor_matrix
+  diag(info_weight) <- diag(cor_weight) <- 1
+  return(list(info = info_weight, correspondence = cor_weight))
 }
 
 #' pairwise correlation
@@ -61,7 +61,7 @@ calculate_weights <- function(nonzero_loc){
 #' @param exclude_0 should 0 values be excluded (default FALSE)
 #' @param zero_value what value represents zero (default is 0)
 #' @param method which method of correlation to use
-#' @param weight should the correlations be weighted by information content?
+#' @param weight should the correlations be weighted by information content and correspondence?
 #'
 #' @details The function returns a named list with:
 #'   \describe{
@@ -105,15 +105,17 @@ pairwise_correlation <- function(data_matrix, use = "pairwise.complete.obs",
   
   # weight them if necessary
   if (weight) {
-    w_matrix <- calculate_weights(!exclude_loc)
-    w_cor <- calc_cor * w_matrix
+    w_matrices <- calculate_weights(!exclude_loc)
+    w_cor <- calc_cor * w_matrices$info * w_matrices$correspondence
   } else {
     w_cor <- calc_cor
   }
 
   # note that exclude_loc is transposed so it matches what the input data looked
   # like
-  return(list(cor = w_cor, keep = t(!exclude_loc)))
+  return(list(cor = w_cor, keep = t(!exclude_loc),
+              raw = calc_cor, info = w_matrices$info,
+              correspondence = w_matrices$correspondence))
 }
 
 #' pairwise correlation counts
