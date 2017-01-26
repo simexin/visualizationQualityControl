@@ -1,3 +1,22 @@
+# v 0.2.18
+
+* Augmented correlations (`weight = TRUE`) should be much more useful and interpretable.
+
+* `information_volume` and `correspondence` calculations improved. Namely that
+`information_volume` is being scaled by the maximum. 
+
+* `correspondence` by default **does not** consider presence of zeros in both
+samples to be informative, this can be changed by setting `not_both = TRUE`. The
+default is more useful in cases where there are lots of features and the data is
+sparse, and zeros are likely to happen by chance.
+
+* In addition to returning the `cor` matrix and `keep` matrix, `pairwise_correlations`
+now returns the `raw` correlations, and the weighting matrices `info` and `correspondence`
+so that each one can be examined.
+
+* The diagonal of `info` weighting corresponds to how many features a sample has
+compared to the sample with the most features.
+
 # v 0.2.5
 
 * Added two functions, `information_volume` and `correspondence` to calculate
