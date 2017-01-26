@@ -22,6 +22,10 @@ pairwise_correlation(data_matrix, use = "pairwise.complete.obs",
 \item{zero_value}{what value represents zero (default is 0)}
 
 \item{method}{which method of correlation to use}
+
+\item{weight}{should the correlations be weighted by information content and correspondence?}
+
+\item{not_both}{should correspondence include things FALSE in both?}
 }
 \value{
 list
@@ -34,6 +38,9 @@ The function returns a named list with:
   \describe{
     \item{cor}{the correlation matrix}
     \item{keep}{a logical matrix indicating which points passed filtering}
+    \item{raw}{the raw correlations}
+    \item{info}{the weighting calculated from information content}
+    \item{correspondence}{the weighting from correspondence}
     }
 }
 
