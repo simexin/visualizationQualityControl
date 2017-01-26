@@ -82,6 +82,12 @@ calculate_weights <- function(nonzero_loc, not_both = FALSE){
   }
 
   diag(info_weight) <- diag(cor_weight) <- 1
+  
+  n_keep <- colSums(nonzero_loc)
+  keep_frac <- n_keep / max(n_keep)
+  
+  diag(info_weight) <- keep_frac
+  
   return(list(info = info_weight, correspondence = cor_weight))
 }
 
