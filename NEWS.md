@@ -1,3 +1,10 @@
+# 0.3.0
+
+* `median_correlations` gains a new argument, `between_classes` to generate the
+median values to samples in other classes. This causes the appearance of two
+more columns when set to TRUE. The default is FALSE, so hopefully this does not
+cause current code to misbehave, but I've bumped the version number as a warning.
+
 # v 0.2.18
 
 * Augmented correlations (`weight = TRUE`) should be much more useful and interpretable.
