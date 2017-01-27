@@ -442,12 +442,14 @@ pairwise_nonzero <- function(data_matrix, use = "pairwise", exclude_na = TRUE, e
 #' @return data.frame
 #' @export
 #'
-#' @details The data.frame returned has three columns:
+#' @details The data.frame may have 5 columns, first three are always present,
+#'   the second two come up if \code{between_classes = TRUE}:
 #' \describe{
 #'   \item{med_cor}{the median correlation with other samples}
 #'   \item{sample_id}{the sample id, either the rowname or an index}
 #'   \item{sample_class}{the class of the sample. If not provided, set to "C1"}
 #'   \item{compare_class}{the class of the other sample}
+#'   \item{plot_class}{\code{sample_class::compare_class} for easy grouping}
 #' }
 #'
 median_correlations <- function(cor_matrix, sample_classes = NULL, between_classes = FALSE){
