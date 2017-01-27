@@ -474,23 +474,33 @@ median_correlations <- function(cor_matrix, sample_classes = NULL, between_class
   split_classes <- split(sample_id, use_classes)
   names(use_classes) <- sample_id
 
-  median_values_class <- lapply(split_classes, function(class_index){
-    class_matrix <- cor_matrix[class_index, class_index]
-    median_values <- vapply(seq(1, nrow(class_matrix)), function(in_row){
-      median(class_matrix[in_row, -in_row])
-    }, numeric(1))
-
-    median_data <- data.frame(med_cor = median_values,
-                              sample_id = class_index,
-                              sample_class = use_classes[class_index])
-    median_data
+  sample_median_cor <- lapply(sample_id, function(in_sample){
+    sample_loc <- which(colnames(cor_matrix) %in% in_sample)
+    
+    sample_cor <- cor_matrix[sample_loc, -sample_loc]
+    
+    cor_by_class <- lapply(split_classes, function(class_ids){
+      class_samples <- setdiff(class_ids, in_sample)
+      data.frame(sample_id = in_sample,
+                 med_cor = median(sample_cor[class_samples]),
+                 sample_class = as.character(use_classes[in_sample]),
+                 compare_class = as.character(unique(use_classes[class_ids])),
+                 stringsAsFactors = FALSE)
+    })
+    cor_by_class <- do.call(rbind, cor_by_class)
   })
+  sample_median_cor <- do.call(rbind, sample_median_cor)
+  
+  if (between_classes) {
+    sample_median_cor$plot_class <- paste0(sample_median_cor$sample_class, "::", sample_median_cor$compare_class)
+  } else {
+    sample_median_cor <- sample_median_cor[(sample_median_cor$sample_class == sample_median_cor$compare_class), ]
+    sample_median_cor$compare_class <- NULL
+  }
 
-  out_values <- do.call(rbind, median_values_class)
+  rownames(sample_median_cor) <- NULL
 
-  rownames(out_values) <- NULL
-
-  out_values
+  sample_median_cor
 }
 
 
